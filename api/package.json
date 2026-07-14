@@ -1,8 +1,0 @@
-{
-  "name": "cark-draft-api",
-  "version": "0.0.0",
-  "private": true,
-  "dependencies": {
-    "@google/genai": "^1.46.0"
-  }
-}
