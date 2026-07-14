@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jant Excel Oluşturucu</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    body { background: #111; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 20px; }
+    h1 { color: #D4AF37; }
+    button { background: #D4AF37; color: #000; border: none; padding: 14px 28px; font-size: 1rem; font-weight: 700; border-radius: 10px; cursor: pointer; }
+    button:hover { background: #FFD700; }
+    #status { color: #10B981; font-weight: 600; }
+    #err { color: #E53935; }
+  </style>
+</head>
+<body>
+  <h1>🔧 Jant Excel Oluşturucu</h1>
+  <p>Bu sayfa <strong>veri.xlsx</strong>'i okuyup 6 jant kaydı ekleyerek yeni dosyayı indirir.</p>
+  <button onclick="run()">▶ Çalıştır &amp; İndir</button>
+  <div id="status"></div>
+  <div id="err"></div>
+
+  <script>
+    const JANT_ROWS = [
+      {
+        "Marka": "Enkei",
+        "Ebat": "6x15",
+        "Model": "RPF1 Classic",
+        "Kategori": "JANT",
+        "Kod": "ENK-6015-01",
+        "Aciklama": "6x15 Enkei RPF1 Classic 5 kollu gümüş alüminyum jant - Renault Clio, Fiat Egea uyumlu",
+        "Mevsim": "4 Mevsim",
+        "Yuk Indeksi": "",
+        "DOT": "2024",
+        "Gorsel": "jant_15.png"
+      },
+      {
+        "Marka": "OZ Racing",
+        "Ebat": "7x16",
+        "Model": "Ultraleggera",
+        "Kategori": "JANT",
+        "Kod": "OZR-7016-02",
+        "Aciklama": "7x16 OZ Racing Ultraleggera 6 kollu gunmetal alüminyum jant - B-SUV ve alt orta segment araç uyumlu",
+        "Mevsim": "4 Mevsim",
+        "Yuk Indeksi": "",
+        "DOT": "2024",
+        "Gorsel": "jant_16.png"
+      },
+      {
+        "Marka": "BBS",
+        "Ebat": "7.5x17",
+        "Model": "CH-R",
+        "Kategori": "JANT",
+        "Kod": "BBS-7517-03",
+        "Aciklama": "7.5x17 BBS CH-R çok kollu parlak gümüş alüminyum jant - Sedan ve SUV araçlara uyumlu",
+        "Mevsim": "4 Mevsim",
+        "Yuk Indeksi": "",
+        "DOT": "2024",
+        "Gorsel": "jant_17.png"
+      },
+      {
+        "Marka": "Vossen",
+        "Ebat": "8x18",
+        "Model": "VFS-2",
+        "Kategori": "JANT",
+        "Kod": "VSN-8018-04",
+        "Aciklama": "8x18 Vossen VFS-2 ikili kol agresif mat siyah işlenmiş yüzey jant - Spor araçlar uyumlu",
+        "Mevsim": "4 Mevsim",
+        "Yuk Indeksi": "",
+        "DOT": "2024",
+        "Gorsel": "jant_18.png"
+      },
+      {
+        "Marka": "OZ Racing",
+        "Ebat": "8.5x19",
+        "Model": "Atelier Forged",
+        "Kategori": "JANT",
+        "Kod": "OZR-8519-05",
+        "Aciklama": "8.5x19 OZ Racing Atelier 10 kollu antrasit diamond-cut premium jant - Üst segment SUV uyumlu",
+        "Mevsim": "4 Mevsim",
+        "Yuk Indeksi": "",
+        "DOT": "2024",
+        "Gorsel": "jant_19.png"
+      },
+      {
+        "Marka": "BMW M Performance",
+        "Ebat": "9.5x21",
+        "Model": "M Turbine",
+        "Kategori": "JANT",
+        "Kod": "BMW-9521-06",
+        "Aciklama": "9.5x21 BMW M Performance Turbine tasarım parlak siyah krom dudaklı ultra premium jant - BMW X5/X6, Mercedes GLE uyumlu",
+        "Mevsim": "4 Mevsim",
+        "Yuk Indeksi": "",
+        "DOT": "2024",
+        "Gorsel": "jant_21.png"
+      }
+    ];
+
+    async function run() {
+      const status = document.getElementById('status');
+      const err = document.getElementById('err');
+      status.textContent = 'veri.xlsx okunuyor...';
+      err.textContent = '';
+
+      try {
+        // Mevcut veri.xlsx'i oku
+        const res = await fetch('veri.xlsx?t=' + Date.now());
+        let workbook;
+        if (res.ok) {
+          const buf = await res.arrayBuffer();
+          workbook = XLSX.read(buf, { type: 'array' });
+          status.textContent = 'veri.xlsx okundu. Jant satırları ekleniyor...';
+        } else {
+          // Dosya yoksa yeni oluştur
+          workbook = XLSX.utils.book_new();
+          status.textContent = 'veri.xlsx bulunamadı, yeni dosya oluşturuluyor...';
+        }
+
+        // İlk sayfayı al veya oluştur
+        let ws;
+        if (workbook.SheetNames.length > 0) {
+          ws = workbook.Sheets[workbook.SheetNames[0]];
+          // Mevcut verileri JSON'a çevir
+          const existing = XLSX.utils.sheet_to_json(ws, { defval: '' });
+          // Jant satırlarını ekle
+          const allData = [...existing, ...JANT_ROWS];
+          ws = XLSX.utils.json_to_sheet(allData);
+          workbook.Sheets[workbook.SheetNames[0]] = ws;
+        } else {
+          ws = XLSX.utils.json_to_sheet(JANT_ROWS);
+          XLSX.utils.book_append_sheet(workbook, ws, 'Urunler');
+        }
+
+        status.textContent = '✅ 6 jant eklendi! Dosya indiriliyor...';
+        XLSX.writeFile(workbook, 'veri.xlsx');
+        status.textContent = '✅ Tamamlandı! veri.xlsx indirildi. İndirilen dosyayı proje klasörüne taşıyın (mevcut veri.xlsx\'in üzerine yazın).';
+      } catch (e) {
+        err.textContent = 'Hata: ' + e.message;
+        status.textContent = '';
+      }
+    }
+  </script>
+</body>
+</html>

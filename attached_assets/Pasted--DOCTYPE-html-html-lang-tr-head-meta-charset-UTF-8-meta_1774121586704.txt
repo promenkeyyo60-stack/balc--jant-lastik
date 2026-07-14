@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Draft Football Game</title>
+<style>
+body {margin:0;font-family:Arial;background:#0b3d2e;color:white;text-align:center;}
+button {padding:10px;margin:5px;border:none;border-radius:8px;background:#1db954;color:white;font-size:16px;cursor:pointer;}
+input {padding:8px;margin:5px;border-radius:6px;border:none;font-size:14px;}
+.screen {display:none;padding:15px;}
+.active{display:block;}
+#wheelContainer{margin:20px auto;width:220px;height:220px;position:relative;}
+#wheel{width:100%;height:100%;border-radius:50%;transition:transform 2s ease-out;}
+.pointer{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:30px;}
+.pitch{margin:20px auto;display:grid;gap:10px;}
+.row{display:grid;gap:10px;}
+.position{background:rgba(255,255,255,0.2);padding:12px;border-radius:10px;cursor:pointer;font-size:12px;}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;}
+.modal-content{background:white;color:black;padding:20px;border-radius:10px;max-height:70%;overflow:auto;}
+.player{padding:10px;border-bottom:1px solid #ccc;cursor:pointer;}
+</style>
+</head>
+<body>
+<h1>⚽ Draft Game</h1>
+
+<div id="setup" class="screen active">
+<h3>Kaç kişi?</h3>
+<input id="count" type="number" min="2" max="6">
+<button onclick="createInputs()">Devam</button>
+<div id="inputs"></div>
+<h3>Diziliş</h3>
+<select id="formation">
+<option value="442">4-4-2</option>
+<option value="433">4-3-3</option>
+<option value="352">3-5-2</option>
+<option value="532">5-3-2</option>
+</select>
+</div>
+
+<div id="game" class="screen">
+<h2 id="turn"></h2>
+<div id="wheelContainer">
+<div class="pointer">▼</div>
+<canvas id="wheel"></canvas>
+</div>
+<button onclick="spin()">Çevir</button>
+<div id="pitch" class="pitch"></div>
+</div>
+
+<div class="modal" id="modal">
+<div class="modal-content" id="playerList"></div>
+</div>
+
+<script>
+let players=[], current=0, selected=[], tempPlayer=null;
+
+// Takım ve oyuncu verisi
+const teams={
+"Barcelona":["Lewandowski","Pedri","Gavi","De Jong"],
+"Real Madrid":["Bellingham","Vinicius","Modric","Rodrygo"],
+"Man City":["Haaland","De Bruyne","Foden","Bernardo"],
+"Galatasaray":["Icardi","Zaha","Torreira","Kerem"],
+"Fenerbahce":["Dzeko","Tadic","Fred","Szymanski"],
+"Besiktas":["Aboubakar","Salih","Cenk","Gedson"]
+};
+
+// 1. Setup oyuncu sayısı
+function createInputs(){
+  let c=document.getElementById("count").value;
+  let html="";
+  for(let i=0;i<c;i++){
+    html+=`<input id="p${i}" placeholder="Oyuncu ${i+1}"><br>`;
+  }
+  html+=`<button onclick="start(${c})">Başla</button>`;
+  inputs.innerHTML=html;
+}
+
+// 2. Başlat
+function start(c){
+  players=[];
+  for(let i=0;i<c;i++){
+    players.push({name:document.getElementById("p"+i).value || "P"+i, team:[]});
+  }
+  setup.classList.remove("active");
+  game.classList.add("active");
+  drawWheel();
+  createPitch();
+  updateTurn();
+}
+
+// 3. Sıra güncelle
+function updateTurn(){ turn.innerText = players[current].name + " sırası"; }
+
+// 4. Pitch oluşturma
+function createPitch(){
+  let form=document.getElementById("formation").value;
+  let layout=[];
+  if(form=="442") layout=[4,4,2,1];
+  if(form=="433") layout=[4,3,3,1];
+  if(form=="352") layout=[3,5,2,1];
+  if(form=="532") layout=[5,3,2,1];
+
+  pitch.innerHTML="";
+  layout.forEach(row=>{
+    let rowDiv=document.createElement("div");
+    rowDiv.className="row";
+    rowDiv.style.gridTemplateColumns=`repeat(${row},1fr)`;
+    for(let i=0;i<row;i++){
+      let pos=document.createElement("div");
+      pos.className="position"; pos.innerText="+";
+      pos.onclick=()=>place(pos);
+      rowDiv.appendChild(pos);
+    }
+    pitch.appendChild(rowDiv);
+  });
+}
+
+// 5. Çark çizimi
+function drawWheel(){
+  let canvas=document.getElementById("wheel"); let ctx=canvas.getContext("2d");
+  canvas.width=220; canvas.height=220;
+  let keys=Object.keys(teams); let angle=360/keys.length;
+  keys.forEach((team,i)=>{
+    ctx.beginPath(); ctx.moveTo(110,110);
+    ctx.fillStyle=`hsl(${i*60},70%,50%)`;
+    ctx.arc(110,110,110,(i*angle)*Math.PI/180,((i+1)*angle)*Math.PI/180); ctx.fill();
+  });
+}
+
+let rotation=0;
+
+// 6. Çarkı çevir
+function spin(){
+  let keys=Object.keys(teams);
+  let rand=Math.floor(Math.random()*keys.length);
+  let angle=360/keys.length;
+  let target=360*5+(rand*angle);
+  rotation+=target;
+  document.getElementById("wheel").style.transform=`rotate(${rotation}deg)`;
+  setTimeout(()=>{showPlayers(keys[rand]);},2000);
+}
+
+// 7. Oyuncuları göster
+function showPlayers(team){
+  let html=`<h3>${team}</h3>`;
+  teams[team].forEach(p=>{
+    if(!selected.includes(p)){ html+=`<div class="player" onclick="pick('${p}')">${p}</div>`; }
+  });
+  playerList.innerHTML=html;
+  modal.style.display="flex";
+}
+
+// 8. Oyuncu seç
+function pick(p){ tempPlayer=p; modal.style.display="none"; }
+
+// 9. Oyuncu yerleştir
+function place(el){
+  if(!tempPlayer || el.innerText!="+") return;
+  el.innerText=tempPlayer;
+  players[current].team.push(tempPlayer);
+  selected.push(tempPlayer);
+  tempPlayer=null;
+  current=(current+1)%players.length;
+  updateTurn();
+  if(checkTeamsComplete()){ draftOver(); }
+}
+
+// 10. Takımlar tamam mı
+function checkTeamsComplete(){ return players.every(p=>p.team.length===11); }
+
+// 11. Draft bitti
+function draftOver(){
+  wheelContainer.style.display="none"; document.querySelector("button").style.display="none";
+  showStartLeagueButton();
+}
+
+// 12. Lig başlat butonu
+function showStartLeagueButton(){
+  let btn=document.createElement("button");
+  btn.innerText="🏆 Ligi Başlat";
+  btn.onclick=startLeague; document.body.appendChild(btn);
+}
+
+// 13. Lig ve puan sistemi
+let standings=[];
+function initStandings(){ standings=players.map(p=>({name:p.name,pts:0,played:0,win:0,draw:0,lose:0})); }
+function getTeamStrength(team){ return team.length*10 + Math.random()*20; }
+function playMatch(teamA,teamB){
+  let powerA=getTeamStrength(teamA.team); let powerB=getTeamStrength(teamB.team);
+  let scoreA=Math.floor(powerA/20); let scoreB=Math.floor(powerB/20);
+  if(scoreA>scoreB) return {winner:teamA,loser:teamB,draw:false};
+  if(scoreB>scoreA) return {winner:teamB,loser:teamA,draw:false};
+  return {draw:true};
+}
+function processMatch(a,b){
+  let result=playMatch(a,b);
+  let teamA=standings.find(t=>t.name===a.name);
+  let teamB=standings.find(t=>t.name===b.name);
+  teamA.played++; teamB.played++;
+  if(result.draw){ teamA.pts+=1; teamB.pts+=1; teamA.draw++; teamB.draw++; }
+  else{
+    let winner=standings.find(t=>t.name===result.winner.name);
+    let loser=standings.find(t=>t.name===result.loser.name);
+    winner.pts+=3; winner.win++; loser.lose++;
+  }
+}
+function startLeague(){
+  initStandings();
+  for(let i=0;i<players.length;i++){
+    for(let j=i+1;j<players.length;j++){
+      processMatch(players[i],players[j]); processMatch(players[j],players[i]);
+    }
+  }
+  showTable();
+}
+function showTable(){
+  standings.sort((a,b)=>b.pts-a.pts);
+  let html="<h2>🏆 Puan Durumu</h2>";
+  standings.forEach((t,i)=>{
+    html+=`${i+1}. ${t.name} - ${t.pts} Puan (G:${t.win} B:${t.draw} M:${t.lose})<br>`;
+  });
+  document.body.innerHTML=html;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Veri Birleştirici</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body style="background:#111; color:#fff; font-family:sans-serif; padding:20px;">
+  <h1>Excel Veri Birleştirici</h1>
+  <div id="status">Bekleniyor...</div>
+  <div id="output" style="word-break: break-all; margin-top:20px; font-family: monospace; font-size: 10px; border: 1px solid #333; padding: 10px; background: #222; max-height: 300px; overflow-y: auto;"></div>
+
+  <script>
+    const JANT_ROWS = [
+      {
+        "Marka": "Enkei",
+        "Ebat": "6x15",
+        "Model": "RPF1 Classic",
+        "Kategori": "JANT",
+        "Kod": "ENK-6015-01",
+        "Aciklama": "6x15 Enkei RPF1 Classic 5 kollu gümüş alüminyum jant - Renault Clio, Fiat Egea uyumlu. Lastik yanak yüksekliği fazladır, bu sayede konforlu bir sürüş sağlar.",
+        "Mevsim": "4 Mevsim",
+        "Yuk": "",
+        "DOT": "2024",
+        "Gorsel": "jant_15.png"
+      },
+      {
+        "Marka": "OZ Racing",
+        "Ebat": "7x16",
+        "Model": "Ultraleggera",
+        "Kategori": "JANT",
+        "Kod": "OZR-7016-02",
+        "Aciklama": "7x16 OZ Racing Ultraleggera 6 kollu gunmetal alüminyum jant - B-SUV ve alt orta segment araç uyumlu. Denge ve konfor dengesi oldukça başarılıdır.",
+        "Mevsim": "4 Mevsim",
+        "Yuk": "",
+        "DOT": "2024",
+        "Gorsel": "jant_16.png"
+      },
+      {
+        "Marka": "BBS",
+        "Ebat": "7.5x17",
+        "Model": "CH-R",
+        "Kategori": "JANT",
+        "Kod": "BBS-7517-03",
+        "Aciklama": "7.5x17 BBS CH-R çok kollu parlak gümüş alüminyum jant - Sedan ve SUV araçlara uyumlu. Estetik ile yol tutuşunu birleştiren popüler ebatlardandır.",
+        "Mevsim": "4 Mevsim",
+        "Yuk": "",
+        "DOT": "2024",
+        "Gorsel": "jant_17.png"
+      },
+      {
+        "Marka": "Vossen",
+        "Ebat": "8x18",
+        "Model": "VFS-2",
+        "Kategori": "JANT",
+        "Kod": "VSN-8018-04",
+        "Aciklama": "8x18 Vossen VFS-2 ikili kol agresif mat siyah işlenmiş yüzey jant - Spor araçlar uyumlu. 18-21 inç jantlar görünümü çarpıcı kılar ancak sert hissettirebilir.",
+        "Mevsim": "4 Mevsim",
+        "Yuk": "",
+        "DOT": "2024",
+        "Gorsel": "jant_18.png"
+      },
+      {
+        "Marka": "OZ Racing",
+        "Ebat": "8.5x19",
+        "Model": "Atelier Forged",
+        "Kategori": "JANT",
+        "Kod": "OZR-8519-05",
+        "Aciklama": "8.5x19 OZ Racing Atelier 10 kollu antrasit diamond-cut premium jant - Üst segment SUV uyumlu. Premium araçlarda görünümü son derece şık kılar.",
+        "Mevsim": "4 Mevsim",
+        "Yuk": "",
+        "DOT": "2024",
+        "Gorsel": "jant_19.png"
+      },
+      {
+        "Marka": "BMW M Performance",
+        "Ebat": "9.5x21",
+        "Model": "M Turbine",
+        "Kategori": "JANT",
+        "Kod": "BMW-9521-06",
+        "Aciklama": "9.5x21 BMW M Performance Turbine parlak siyah ultra premium jant - BMW, Mercedes ve üst segment premium SUV araçlar uyumlu.",
+        "Mevsim": "4 Mevsim",
+        "Yuk": "",
+        "DOT": "2024",
+        "Gorsel": "jant_21.png"
+      }
+    ];
+
+    async function merge() {
+      const statusDiv = document.getElementById('status');
+      const outputDiv = document.getElementById('output');
+      
+      try {
+        statusDiv.textContent = "veri_yedek.xlsx dosyası yükleniyor...";
+        const response = await fetch('veri_yedek.xlsx?t=' + Date.now());
+        if (!response.ok) {
+          throw new Error("veri_yedek.xlsx okunamadı. HTTP " + response.status);
+        }
+        
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        
+        // Mevcut lastik vb. verilerini JSON array olarak al
+        const existingRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+        statusDiv.textContent = "Mevcut satırlar okundu: " + existingRows.length + " adet. Yeni jantlar ekleniyor...";
+        
+        // Yeni jant satırlarını ekle
+        const combinedRows = [...existingRows, ...JANT_ROWS];
+        
+        // Yeni worksheet ve workbook oluştur
+        const newWorksheet = XLSX.utils.json_to_sheet(combinedRows);
+        const newWorkbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, sheetName);
+        
+        // Base64 olarak çıktı al
+        const b64 = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'base64' });
+        
+        outputDiv.textContent = b64;
+        console.log("MERGE_B64_START:" + b64 + ":MERGE_B64_END");
+        statusDiv.textContent = "BAŞARILI: Veri birleştirildi ve Base64 oluşturuldu.";
+      } catch (err) {
+        statusDiv.textContent = "HATA: " + err.message;
+        console.error(err);
+      }
+    }
+    
+    window.onload = merge;
+  </script>
+</body>
+</html>
