@@ -1,0 +1,78 @@
+# Dependencies
+node_modules/
+
+# IDE & Editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Build output
+dist/
+tmp/
+out-tsc/
+*.tsbuildinfo
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Environment Variables & Secrets — NEVER commit
+.env
+.env.*
+*.env
+
+# Replit
+.cache/
+.local/
+.replit
+.replitignore
+replit.md
+
+# Vercel
+.vercel/
+
+# Git LFS artifacts (orphaned pointers)
+zi27cD0V
+zieFUzdW
+
+# Development-only files (not needed for production)
+pushToGithub.js
+test_read.js
+server.js
+baslat.bat
+
+# TypeScript configs (not used in this project)
+tsconfig.json
+tsconfig.base.json
+
+# Backup & temporary Excel files
+veri_yedek.xlsx
+veri_new.xlsx
+
+# Orphaned file (not a directory)
+yuklenen_fotograflar
+
+# ZIP exports
+*.zip
+
+# Misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# Agents config
+.agents/

@@ -1,8 +1,0 @@
-uploads = []
-generated = []
-
-[[outputs]]
-id = "2AkRisYzncQUqIsOEM8Z6"
-uri = "file://cark-draft.zip"
-type = "unspecified"
-title = "cark-draft.zip — GitHub & Vercel için hazır"

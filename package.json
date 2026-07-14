@@ -1,9 +1,6 @@
 {
-  "name": "jant-lastik",
+  "name": "balci-jant-lastik",
   "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "isomorphic-git": "^1.38.7",
-    "xlsx": "^0.18.5"
-  }
+  "description": "Balcı Jant & Lastik - Ürün kataloğu web uygulaması",
+  "private": true
 }

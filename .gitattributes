@@ -1,0 +1,10 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Images (binary, no diff)
+*.png binary
+*.jpg binary
+*.jpeg binary
+
+# Excel files (binary)
+*.xlsx binary

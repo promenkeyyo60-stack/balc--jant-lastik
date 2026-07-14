@@ -318,7 +318,7 @@ function parseAndMapExcelData(rawData) {
       image:       gorsel,
       stok:        stok,
     };
-  }).filter(p => p.kod || p.size || p.description !== 'İsimsiz Ürün');
+  }).filter(p => p.code || p.size || p.description !== 'İsimsiz Ürün');
 }
 
 function buildDynamicMenus() {
