@@ -529,13 +529,15 @@ function renderProducts() {
         <img src="${imgSrc}" alt="${p.description}" loading="lazy" onerror="this.src='${activeSegment === 'jant' ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC}'" />
       </div>
       <div class="card-body">
-        ${displayBrand ? `<div class="card-brand">${displayBrand}</div>` : ""}
+        <div class="card-brand-row">
+          <span class="card-brand">${displayBrand || ""}</span>
+          ${p.dot ? `<span class="meta-tag dot">DOT ${p.dot}</span>` : ""}
+        </div>
         <div class="card-size">${displaySize}${loadStr}</div>
         ${displayModel ? `<div class="card-model">${displayModel}</div>` : ""}
         <div class="card-meta">
-          ${p.dot ? `<span class="meta-tag dot">DOT ${p.dot}</span>` : ""}
-          ${p.code ? `<span class="meta-tag code">#${p.code}</span>` : ""}
-          ${p.stok ? `<span class="meta-tag stok">STK: ${p.stok}</span>` : ""}
+          ${p.code ? `<span class="meta-tag code">#${p.code}</span>` : "<span></span>"}
+          ${p.stok ? `<span class="meta-tag stok">STK: ${p.stok}</span>` : "<span></span>"}
         </div>
       </div>
     `;
