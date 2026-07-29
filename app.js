@@ -293,7 +293,8 @@ function parseAndMapExcelData(rawData) {
     const tip        = getColVal(row, ['tip']);               // 'LASTİK' veya 'JANT'
     const kategori   = getColVal(row, ['kategori', 'sinif', 'class', 'type', 'tur', 'arac']);
     const marka      = getColVal(row, ['marka', 'brand', 'make']);
-    const kod        = getColVal(row, ['kod', 'kodu', 'code', 'sku', 'no', 'id', 'ref', 'stok']);
+    const rawKod     = getColVal(row, ['kod', 'kodu', 'code', 'sku', 'no', 'id', 'ref', 'stok']);
+    const kod        = rawKod ? String(rawKod).replace(/^[\/#\\]+/, '').trim() : '';
     const aciklama   = getColVal(row, ['aciklama', 'tanim', 'urun', 'description', 'name', 'product']);
     const ebat       = getColVal(row, ['ebat', 'cap', 'boyut', 'size', 'olcu', 'dimension']);
     const yuk        = getColVal(row, ['yuk', 'indeks', 'load', 'index']);
@@ -621,7 +622,7 @@ function renderProducts() {
         <div class="card-size">${displaySize}${loadStr}</div>
         ${displayModel ? `<div class="card-model">${displayModel}</div>` : ""}
         <div class="card-meta">
-          ${p.code ? `<span class="meta-tag code">#${p.code}</span>` : "<span></span>"}
+          ${p.code ? `<span class="meta-tag code">${String(p.code).replace(/^[\/#\\]+/, '').trim()}</span>` : "<span></span>"}
           ${p.stok ? `<span class="meta-tag stok">STK: ${p.stok}</span>` : "<span></span>"}
         </div>
       </div>
