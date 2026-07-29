@@ -61,24 +61,23 @@ html, body {
   overflow: hidden;
 }
 
-/* Spotlight arka plan katmanı */
+/* Birleşik splash görsel katmanı (spotlight + logo tek parça) */
 .splash::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url('spotlight.png');
-  background-size: cover;
-  background-position: center top;
+  background-image: url('splash_screen.png');
+  background-size: contain;
+  background-position: center center;
   background-repeat: no-repeat;
-  opacity: 0.85;
   pointer-events: none;
   z-index: 0;
-  animation: spotlightFadeIn 1.8s ease 0.2s both;
+  animation: splashBgFadeIn 2.0s ease 0.1s both;
 }
 
-@keyframes spotlightFadeIn {
-  from { opacity: 0; transform: scale(1.05); }
-  to   { opacity: 0.85; transform: scale(1); }
+@keyframes splashBgFadeIn {
+  from { opacity: 0; transform: scale(1.04); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 .splash-car, .splash-text-wrap {
@@ -92,36 +91,17 @@ html, body {
   pointer-events: none;
 }
 
-/* ---- Yeni Logo Wrap ---- */
+/* ---- Logo Wrap - gizlendi, görsel splash_screen.png içinde ---- */
 .splash-logo-wrap {
   position: relative;
   z-index: 2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: none; /* Artık ayrı logo yok, splash_screen.png içinde bütünleşik */
 }
 
-/* Silik (fade-in + hafif yukarı kayış) animasyon */
 .splash-logo-img {
-  width: 100%;
-  max-width: 460px;
-  height: auto;
-  opacity: 0;
-  /* mix-blend-mode: screen → siyah JPG arka plan görünmez olur, logo grafikleri kalır */
-  mix-blend-mode: screen;
-  filter: contrast(1.15) brightness(1.1) saturate(1.15);
-  /* Mask kaldırıldı - screen mode yeterli */
-  animation: logoGentleFadeIn 2.2s ease 0.5s forwards;
+  display: none;
 }
 
-@keyframes logoGentleFadeIn {
-  0%   { opacity: 0;    transform: translateY(22px) scale(0.95); }
-  35%  { opacity: 0.3;  transform: translateY(8px)  scale(0.98); }
-  100% { opacity: 1;    transform: translateY(0px)  scale(1);    }
-}
-
-/* Hide season emojis */
-.card-season-badge { display: none; }
 
 @keyframes carFadeIn {
   from { opacity: 0; transform: translateY(-15px); }
