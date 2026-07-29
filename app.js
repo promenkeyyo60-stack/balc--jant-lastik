@@ -446,6 +446,91 @@ function getSeasonIcon(season) {
 }
 
 
+// ---- BRAND LOGO HELPER ----
+function getBrandLogoHTML(brand) {
+  if (!brand) return '';
+  const b = brand.trim().toUpperCase();
+
+  if (b.includes("PETLAS")) {
+    return `<div class="brand-logo-wrap" title="PETLAS">
+      <svg viewBox="0 0 120 32" class="brand-svg">
+        <rect width="120" height="32" rx="4" fill="#E30613"/>
+        <text x="60" y="23" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="21" fill="#FFFFFF" text-anchor="middle" letter-spacing="-0.5">petlas</text>
+      </svg>
+    </div>`;
+  }
+  if (b.includes("PIRELLI") || b.includes("PİRELLİ")) {
+    return `<div class="brand-logo-wrap" title="PIRELLI">
+      <svg viewBox="0 0 120 32" class="brand-svg">
+        <rect width="120" height="32" rx="4" fill="#FED100"/>
+        <text x="60" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="17" fill="#000000" text-anchor="middle" letter-spacing="1">PIRELLI</text>
+      </svg>
+    </div>`;
+  }
+  if (b.includes("MICHELIN") || b.includes("MİCHELİN")) {
+    return `<div class="brand-logo-wrap" title="MICHELIN">
+      <svg viewBox="0 0 120 32" class="brand-svg">
+        <rect width="120" height="32" rx="4" fill="#00205B"/>
+        <text x="60" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="14" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">MICHELIN</text>
+        <rect x="15" y="24" width="90" height="3" fill="#FFF200" rx="1.5"/>
+      </svg>
+    </div>`;
+  }
+  if (b.includes("BRIDGESTONE") || b.includes("BRİDGESTONE")) {
+    return `<div class="brand-logo-wrap" title="BRIDGESTONE">
+      <svg viewBox="0 0 125 32" class="brand-svg">
+        <rect width="125" height="32" rx="4" fill="#000000" stroke="#333333" stroke-width="1"/>
+        <text x="12" y="23" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="18" fill="#ED1C24">B</text>
+        <text x="26" y="21" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="11.5" fill="#FFFFFF" letter-spacing="0.5">RIDGESTONE</text>
+      </svg>
+    </div>`;
+  }
+  if (b.includes("CONTINENTAL") || b.includes("CONTİNENTAL")) {
+    return `<div class="brand-logo-wrap" title="CONTINENTAL">
+      <svg viewBox="0 0 125 32" class="brand-svg">
+        <rect width="125" height="32" rx="4" fill="#FFA500"/>
+        <text x="62.5" y="21" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="13.5" fill="#000000" text-anchor="middle" letter-spacing="0.5">Continental</text>
+      </svg>
+    </div>`;
+  }
+  if (b.includes("GOODYEAR")) {
+    return `<div class="brand-logo-wrap" title="GOODYEAR">
+      <svg viewBox="0 0 120 32" class="brand-svg">
+        <rect width="120" height="32" rx="4" fill="#002B66"/>
+        <text x="60" y="21" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="14" fill="#FFCC00" text-anchor="middle" letter-spacing="0.5">GOODYEAR</text>
+      </svg>
+    </div>`;
+  }
+  if (b.includes("LASSA")) {
+    return `<div class="brand-logo-wrap" title="LASSA">
+      <svg viewBox="0 0 120 32" class="brand-svg">
+        <rect width="120" height="32" rx="4" fill="#D31018"/>
+        <text x="60" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="18" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">LASSA</text>
+      </svg>
+    </div>`;
+  }
+  if (b.includes("STARMAXX")) {
+    return `<div class="brand-logo-wrap" title="STARMAXX">
+      <svg viewBox="0 0 120 32" class="brand-svg">
+        <rect width="120" height="32" rx="4" fill="#111111" stroke="#D4AF37" stroke-width="1"/>
+        <text x="60" y="21" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="14" fill="#D4AF37" text-anchor="middle" letter-spacing="1">STARMAXX</text>
+      </svg>
+    </div>`;
+  }
+  if (b.includes("FALKEN")) {
+    return `<div class="brand-logo-wrap" title="FALKEN">
+      <svg viewBox="0 0 120 32" class="brand-svg">
+        <rect width="120" height="32" rx="4" fill="#003A70"/>
+        <text x="60" y="21" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="15" fill="#00A3E0" text-anchor="middle" letter-spacing="1">FALKEN</text>
+      </svg>
+    </div>`;
+  }
+
+  return `<div class="brand-logo-wrap default-badge" title="${brand}">
+    <span class="brand-text-badge">${brand}</span>
+  </div>`;
+}
+
 // ---- RENDER PRODUCTS ----
 function renderProducts() {
   const products = activeSegment === "jant" ? JANT_PRODUCTS : LASTIK_PRODUCTS;
@@ -530,7 +615,7 @@ function renderProducts() {
       </div>
       <div class="card-body">
         <div class="card-brand-row">
-          <span class="card-brand">${displayBrand || ""}</span>
+          ${getBrandLogoHTML(displayBrand)}
           ${p.dot ? `<span class="meta-tag dot">DOT ${p.dot}</span>` : ""}
         </div>
         <div class="card-size">${displaySize}${loadStr}</div>

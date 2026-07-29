@@ -742,24 +742,61 @@ html, body {
   transform: scale(1.05) rotate(-3deg);
 }
 
+.product-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  animation: fadeInCard 0.4s ease both;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .card-body {
   padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .card-brand-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
-  min-height: 18px;
+  margin-bottom: 6px;
+  min-height: 22px;
 }
 
-.card-brand {
-  font-size: 0.62rem;
-  font-weight: 700;
+/* Marka Amblem/Logo Stilleri */
+.brand-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  max-height: 22px;
+}
+
+.brand-svg {
+  height: 20px;
+  width: auto;
+  max-width: 105px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  border-radius: 4px;
+}
+
+.brand-text-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
   color: var(--accent);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 2px 7px;
+  border-radius: 4px;
 }
 
 .card-size {
@@ -775,7 +812,7 @@ html, body {
   font-size: 0.68rem;
   font-weight: 500;
   color: var(--text-secondary);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   line-height: 1.3;
 }
 
@@ -783,7 +820,8 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 6px;
+  margin-top: auto;
+  padding-top: 6px;
   gap: 4px;
 }
 
