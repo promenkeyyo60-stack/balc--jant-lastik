@@ -709,13 +709,17 @@ html, body {
 .card-image-wrap {
   position: relative;
   background: #111111;
-  padding: 0;
+  padding: 16px 10px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 140px;
-  overflow: hidden;
+  min-height: 130px;
   border-bottom: 1px solid var(--border);
+}
+
+.card-image-wrap.white-bg {
+  background: #ffffff;
+  padding: 8px;
 }
 
 .card-image-wrap::after {
@@ -730,12 +734,18 @@ html, body {
 /* Image fits */
 .card-image-wrap img {
   width: 100%;
-  height: 140px;
-  object-fit: cover;
-  object-position: center;
+  max-width: 160px;
+  height: auto;
+  object-fit: contain;
   mix-blend-mode: screen;
   filter: contrast(1.1) brightness(1.05);
   transition: transform 0.3s ease;
+}
+
+.card-image-wrap.white-bg img {
+  mix-blend-mode: normal;
+  filter: none;
+  max-width: 180px;
 }
 
 .product-card:hover .card-image-wrap img {

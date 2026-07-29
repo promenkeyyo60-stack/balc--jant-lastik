@@ -660,7 +660,7 @@ function renderProducts() {
     card.innerHTML = `
       <span class="card-category-badge">${p.category || (activeSegment === "jant" ? "JANT" : "LASTİK")}</span>
       ${seasonBadge}
-      <div class="card-image-wrap">
+      <div class="card-image-wrap${getModelImage(p) ? ' white-bg' : ''}">
         <img src="${imgSrc}" alt="${p.description}" loading="lazy" onerror="this.src='${activeSegment === 'jant' ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC}'" />
       </div>
       <div class="card-body">
