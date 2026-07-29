@@ -115,6 +115,12 @@ function switchTab(tab) {
   toggleSidebar();
 }
 
+// ---- JANT FİLTRE STATE ----
+let currentJantInc = "all";
+let currentJantBjon = "all";
+let currentJantOfset = "all";
+let currentJantGoebek = "all";
+
 // ---- SEGMENT SELECTOR ----
 function selectSegment(type) {
   activeSegment = type;
@@ -131,9 +137,37 @@ function selectSegment(type) {
   // Update section label
   sectionLabel.textContent = type === "lastik" ? "Lastikler" : "Jantlar";
   
+  // Sidebar filtrelerini segment'e göre göster/gizle
+  const lastikFiltersGroup = document.getElementById("lastikFiltersGroup");
+  const lastikBrandsGroup  = document.getElementById("lastikBrandsGroup");
+  const jantIncGroup    = document.getElementById("jantIncGroup");
+  const jantBjonGroup   = document.getElementById("jantBjonGroup");
+  const jantOfsetGroup  = document.getElementById("jantOfsetGroup");
+  const jantGoebekGroup = document.getElementById("jantGoebekGroup");
+
+  if (type === "jant") {
+    lastikFiltersGroup?.classList.add("hidden");
+    lastikBrandsGroup?.classList.add("hidden");
+    jantIncGroup?.classList.remove("hidden");
+    jantBjonGroup?.classList.remove("hidden");
+    jantOfsetGroup?.classList.remove("hidden");
+    jantGoebekGroup?.classList.remove("hidden");
+  } else {
+    lastikFiltersGroup?.classList.remove("hidden");
+    lastikBrandsGroup?.classList.remove("hidden");
+    jantIncGroup?.classList.add("hidden");
+    jantBjonGroup?.classList.add("hidden");
+    jantOfsetGroup?.classList.add("hidden");
+    jantGoebekGroup?.classList.add("hidden");
+  }
+
   // Reset filters
   currentCat = "all";
   currentBrand = "all";
+  currentJantInc = "all";
+  currentJantBjon = "all";
+  currentJantOfset = "all";
+  currentJantGoebek = "all";
   searchQuery = "";
   searchInput.value = "";
   
@@ -303,10 +337,47 @@ function parseAndMapExcelData(rawData) {
     // Kategori belirsizse varsayılan
     const finalKategori = kategori || (finalTip === 'JANT' ? 'BİNEK' : 'BİNEK');
 
+    let inc    = getColVal(row, ['inc', 'inch', 'cap_inch', 'jant_cap', 'jantcap', 'rim_size']);
+    let bjon   = getColVal(row, ['bjon', 'pcd', 'delik_araligi', 'bolt', 'civata', 'delik']);
+    let ofset  = getColVal(row, ['ofset', 'offset', 'et']);
+    let goebek = getColVal(row, ['goebek', 'gobek', 'hub', 'merkez', 'center_bore', 'cb']);
+
+    // JANT ise açıklamadan otomatik parse et (Excel'de ayrı sütun yoksa)
+    // Örnek: "6X13 4X98 ET13 58.6 SILVER"
+    //   inc    = 13  (6x13'ten → son sayı)
+    //   bjon   = 4X98 (4 ya da 5 ile başlayan x aralığı)
+    //   ofset  = ET13 (ET ile başlayan)
+    //   goebek = 58.6 (ondalikli merkez çapı)
+    if (finalTip === 'JANT' && aciklama) {
+      const desc = aciklama.toUpperCase();
+      if (!inc) {
+        // Önce \dX\d\d formatından cap çıkar (6X13, 7X16 vb.)
+        const mInch = desc.match(/\d(?:\.\d)?[Xx](\d{2}(?:\.\d)?)(?:\s|$)/);
+        if (mInch) inc = mInch[1];
+        else {
+          // Doğrudan 2 haneli sayı arayışı (13, 14, 15, 16...)
+          const mInch2 = desc.match(/(?:^|\s)(1[3-9]|2[0-4])(?:"|"|\s|$)/);
+          if (mInch2) inc = mInch2[1];
+        }
+      }
+      if (!bjon) {
+        const mBjon = desc.match(/([45]X\d{2,5}(?:\.\d)?)/);
+        if (mBjon) bjon = mBjon[1];
+      }
+      if (!ofset) {
+        const mOfset = desc.match(/ET(-?\d{1,3})/);
+        if (mOfset) ofset = 'ET' + mOfset[1];
+      }
+      if (!goebek) {
+        const mGoebek = desc.match(/\b(\d{2,3}\.\d)\b/);
+        if (mGoebek) goebek = mGoebek[1];
+      }
+    }
+
     return {
       id:          index + 1,
-      tip:         finalTip,                     // 'LASTİK' | 'JANT'
-      category:    finalKategori,                // BİNEK, UHP, KAMYON…
+      tip:         finalTip,
+      category:    finalKategori,
       code:        kod,
       description: aciklama || 'İsimsiz Ürün',
       brand:       marka,
@@ -317,6 +388,11 @@ function parseAndMapExcelData(rawData) {
       season:      detectSeason(aciklama, mevsimRaw),
       image:       gorsel,
       stok:        stok,
+      // Jant özel alanlar
+      inc:         inc,
+      bjon:        bjon,
+      ofset:       ofset,
+      goebek:      goebek,
     };
   }).filter(p => p.code || p.size || p.description !== 'İsimsiz Ürün');
 }
@@ -331,20 +407,20 @@ function buildDynamicMenus() {
     if (p.brand) brands.add(p.brand.toUpperCase());
   });
 
-  // Populate Categories
+  // Populate Categories (lastik için)
   categoriesMenu.innerHTML = `<button class="sub-nav-btn active" data-filter-type="category" data-filter-value="all">Tümü</button>`;
   [...categories].sort().forEach(cat => {
     categoriesMenu.innerHTML += `<button class="sub-nav-btn" data-filter-type="category" data-filter-value="${cat}">${cat}</button>`;
   });
 
-  // Populate Brands
+  // Populate Brands (lastik için)
   brandsMenu.innerHTML = `<button class="sub-nav-btn active" data-filter-type="brand" data-filter-value="all">Tümü</button>`;
   [...brands].sort().forEach(brand => {
     brandsMenu.innerHTML += `<button class="sub-nav-btn" data-filter-type="brand" data-filter-value="${brand}">${brand}</button>`;
   });
 
-  // Bind clicks
-  document.querySelectorAll(".sub-nav-btn").forEach(btn => {
+  // Bind clicks - lastik filtreleri
+  document.querySelectorAll("#categoriesMenu .sub-nav-btn, #brandsMenu .sub-nav-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
       const type = btn.dataset.filterType;
       const val = btn.dataset.filterValue;
@@ -357,6 +433,44 @@ function buildDynamicMenus() {
 
       toggleSidebar();
       renderProducts();
+    });
+  });
+
+  // Bind clicks - jant filtreleri
+  const jantFilterMenuIds = [
+    { id: "jantIncMenu",    state: "currentJantInc" },
+    { id: "jantBjonMenu",   state: "currentJantBjon" },
+    { id: "jantOfsetMenu",  state: "currentJantOfset" },
+    { id: "jantGoebekMenu", state: "currentJantGoebek" },
+  ];
+  jantFilterMenuIds.forEach(({ id }) => {
+    const menu = document.getElementById(id);
+    if (!menu) return;
+    menu.querySelectorAll(".sub-nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const filterType = btn.dataset.filterType;
+        const val = btn.dataset.filterValue;
+        menu.querySelectorAll(".sub-nav-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        if (filterType === "jant_inc")    currentJantInc    = val;
+        if (filterType === "jant_bjon")   currentJantBjon   = val;
+        if (filterType === "jant_ofset")  currentJantOfset  = val;
+        if (filterType === "jant_goebek") currentJantGoebek = val;
+        toggleSidebar();
+        renderProducts();
+      });
+    });
+  });
+
+  // Jant accordion'larını açmak için accordion toggle
+  document.querySelectorAll("#jantIncGroup .accordion-header, #jantBjonGroup .accordion-header, #jantOfsetGroup .accordion-header, #jantGoebekGroup .accordion-header").forEach(header => {
+    // Mevcut listener'ları tekrar eklemekten kaçın
+    if (header.dataset.listenerBound) return;
+    header.dataset.listenerBound = "true";
+    header.addEventListener("click", () => {
+      header.classList.toggle("open");
+      const body = header.nextElementSibling;
+      body.classList.toggle("expand");
     });
   });
 }
@@ -379,6 +493,18 @@ function renderProducts() {
   const filtered = products.filter(p => {
     const matchCat = currentCat === "all" || (p.category || '').toUpperCase() === currentCat;
     const matchBrand = currentBrand === "all" || (p.brand || '').toUpperCase() === currentBrand;
+
+    // Jant spesifik filtreler
+    // Eğer üründe alan yoksa (geçici veri dönemi) filtre bypass edilir - tüm jantlar görünür
+    const jantIncVal    = (p.inc    || '').trim();
+    const jantBjonVal   = (p.bjon   || '').trim();
+    const jantOfsetVal  = (p.ofset  || '').trim();
+    const jantGobekVal  = (p.goebek || '').trim();
+
+    const matchInc    = activeSegment !== "jant" || currentJantInc    === "all" || !jantIncVal    || jantIncVal.toUpperCase()    === currentJantInc.toUpperCase();
+    const matchBjon   = activeSegment !== "jant" || currentJantBjon   === "all" || !jantBjonVal   || jantBjonVal.toUpperCase()   === currentJantBjon.toUpperCase();
+    const matchOfset  = activeSegment !== "jant" || currentJantOfset  === "all" || !jantOfsetVal  || jantOfsetVal.toUpperCase()  === currentJantOfset.toUpperCase();
+    const matchGoebek = activeSegment !== "jant" || currentJantGoebek === "all" || !jantGobekVal  || jantGobekVal.toUpperCase()  === currentJantGoebek.toUpperCase();
     
     const q = searchQuery.toLowerCase();
     const matchSearch = !q || (
@@ -388,7 +514,7 @@ function renderProducts() {
       (p.code        || '').toLowerCase().includes(q) ||
       (p.description || '').toLowerCase().includes(q)
     );
-    return matchCat && matchBrand && matchSearch;
+    return matchCat && matchBrand && matchInc && matchBjon && matchOfset && matchGoebek && matchSearch;
   });
 
   productGrid.innerHTML = "";
@@ -527,6 +653,67 @@ function openModal(p) {
     ? p.image
     : activeSegment === "jant" ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC;
 
+  const isJant = activeSegment === "jant";
+
+  // Jant için detail kartları özel
+  const detailCards = isJant ? `
+    <div class="detail-card">
+      <div class="detail-label">📏 İnç</div>
+      <div class="detail-value accent">${p.inc ? p.inc + '"' : "-"}</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">🔩 BJ On Aralığı</div>
+      <div class="detail-value">${p.bjon || "-"}</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">↔️ Ofset</div>
+      <div class="detail-value">${p.ofset || "-"}</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">⭕ Göbek</div>
+      <div class="detail-value">${p.goebek || "-"}</div>
+    </div>
+    ${p.stok ? `
+    <div class="detail-card" style="border: 1px solid var(--accent); background: rgba(212,175,55,0.06);">
+      <div class="detail-label">📦 Stok Durumu</div>
+      <div class="detail-value accent" style="font-size:1.1rem;">${p.stok}</div>
+    </div>` : ''}
+    <div class="detail-card">
+      <div class="detail-label">🏷️ Ürün Kodu</div>
+      <div class="detail-value accent">${p.code || "-"}</div>
+    </div>
+    <div class="detail-card" style="grid-column:1/-1">
+      <div class="detail-label">Tam Açıklama</div>
+      <div class="detail-value" style="font-size:0.8rem;font-weight:500;color:var(--text-secondary);line-height:1.5">${p.description}</div>
+    </div>
+  ` : `
+    <div class="detail-card">
+      <div class="detail-label">Ürün Kodu</div>
+      <div class="detail-value accent">${p.code || "-"}</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">DOT / Üretim Yılı</div>
+      <div class="detail-value">${p.dot || "-"}</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">Mevsim</div>
+      <div class="detail-value ${seasonColorCls}">${season.emoji} ${season.label}</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">Yük İndeksi</div>
+      <div class="detail-value">${p.load || "-"}</div>
+    </div>
+    ${p.stok ? `
+    <div class="detail-card" style="border: 1px solid var(--accent); background: rgba(212,175,55,0.06);">
+      <div class="detail-label">📦 Stok Durumu</div>
+      <div class="detail-value accent" style="font-size:1.1rem;">${p.stok}</div>
+    </div>` : ''}
+    <div class="detail-card" style="grid-column:1/-1">
+      <div class="detail-label">Tam Açıklama</div>
+      <div class="detail-value" style="font-size:0.8rem;font-weight:500;color:var(--text-secondary);line-height:1.5">${p.description}</div>
+    </div>
+  `;
+
   modalContent.innerHTML = `
     <div class="modal-image-wrap">
       <img src="${modalImg}" alt="${p.description}" onerror="this.src='${activeSegment === 'jant' ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC}'" />
@@ -542,35 +729,11 @@ function openModal(p) {
         <div class="modal-size">${p.size || p.description}</div>
         <div class="modal-model">${p.model ? p.model + (p.load ? ' &bull; ' + p.load : '') : (p.load || '')}</div>
       </div>
-      <div class="modal-season-icon" title="${season.label}">${season.emoji}</div>
+      ${!isJant ? `<div class="modal-season-icon" title="${season.label}">${season.emoji}</div>` : ''}
     </div>
 
     <div class="modal-details">
-      <div class="detail-card">
-        <div class="detail-label">Ürün Kodu</div>
-        <div class="detail-value accent">${p.code || "-"}</div>
-      </div>
-      <div class="detail-card">
-        <div class="detail-label">DOT / Üretim Yılı</div>
-        <div class="detail-value">${p.dot || "-"}</div>
-      </div>
-      <div class="detail-card">
-        <div class="detail-label">Mevsim</div>
-        <div class="detail-value ${seasonColorCls}">${season.emoji} ${season.label}</div>
-      </div>
-      <div class="detail-card">
-        <div class="detail-label">Yük İndeksi</div>
-        <div class="detail-value">${p.load || "-"}</div>
-      </div>
-      ${p.stok ? `
-      <div class="detail-card" style="border: 1px solid var(--accent); background: rgba(212,175,55,0.06);">
-        <div class="detail-label">📦 Stok Durumu</div>
-        <div class="detail-value accent" style="font-size:1.1rem;">${p.stok}</div>
-      </div>` : ''}
-      <div class="detail-card" style="grid-column:1/-1">
-        <div class="detail-label">Tam Açıklama</div>
-        <div class="detail-value" style="font-size:0.8rem;font-weight:500;color:var(--text-secondary);line-height:1.5">${p.description}</div>
-      </div>
+      ${detailCards}
     </div>
   `;
 

@@ -17,9 +17,14 @@
 
   <!-- SPLASH SCREEN -->
   <div id="splash" class="splash">
-    <!-- Premium Image Logo -->
-    <div class="splash-logo-wrap" style="text-align: center; max-width: 90%; animation: fadeInScale 1.5s ease-out forwards; display: flex; justify-content: center;">
-      <img src="logo.jpg" alt="Balcı Jant Lastik Logo" style="width: 100%; max-width: 500px; height: auto; -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 75%); mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 75%); mix-blend-mode: lighten;" onerror="this.style.display='none'" />
+    <!-- BALCI OTOMOTİV Logo -->
+    <div class="splash-logo-wrap">
+      <img
+        src="logo.jpg"
+        alt="Balcı Otomotiv Logo"
+        class="splash-logo-img"
+        onerror="this.style.display='none'"
+      />
     </div>
   </div>
 
@@ -30,7 +35,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="header-logo">
-        <img src="logo.jpg" alt="Balcı Logo" style="height: 36px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
+        <img src="logo.jpg" alt="Balcı Logo" style="height: 44px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
       </div>
       <button class="icon-btn sidebar-close" id="sidebarCloseBtn" aria-label="Menüyü Kapat">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -48,8 +53,8 @@
       </button>
       
 
-      <!-- Kategoriler Accordion -->
-      <div class="accordion">
+      <!-- Kategoriler Accordion (Lastik için) -->
+      <div class="accordion" id="lastikFiltersGroup">
         <button class="accordion-header" id="accCatBtn">
           <div class="acc-title">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -67,8 +72,8 @@
         </div>
       </div>
 
-      <!-- Markalar Accordion -->
-      <div class="accordion">
+      <!-- Markalar Accordion (Lastik için) -->
+      <div class="accordion" id="lastikBrandsGroup">
         <button class="accordion-header" id="accBrandBtn">
           <div class="acc-title">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,6 +88,111 @@
         <div class="accordion-body expand" id="brandsMenu">
           <!-- Markalar buraya JS ile yüklenecek -->
           <button class="sub-nav-btn active" data-filter-type="brand" data-filter-value="all">Tümü</button>
+        </div>
+      </div>
+
+      <!-- ===== JANT FİLTRELERİ ===== -->
+
+      <!-- İnç Accordion (Jant için) -->
+      <div class="accordion hidden" id="jantIncGroup">
+        <button class="accordion-header open" id="accIncBtn">
+          <div class="acc-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <circle cx="12" cy="12" r="9" stroke-width="2"/>
+              <circle cx="12" cy="12" r="3" stroke-width="2"/>
+            </svg>
+            İnç
+          </div>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-body expand" id="jantIncMenu">
+          <button class="sub-nav-btn active" data-filter-type="jant_inc" data-filter-value="all">Tümü</button>
+          <button class="sub-nav-btn" data-filter-type="jant_inc" data-filter-value="15">15"</button>
+          <button class="sub-nav-btn" data-filter-type="jant_inc" data-filter-value="16">16"</button>
+          <button class="sub-nav-btn" data-filter-type="jant_inc" data-filter-value="17">17"</button>
+          <button class="sub-nav-btn" data-filter-type="jant_inc" data-filter-value="18">18"</button>
+          <button class="sub-nav-btn" data-filter-type="jant_inc" data-filter-value="19">19"</button>
+          <button class="sub-nav-btn" data-filter-type="jant_inc" data-filter-value="20">20"</button>
+          <button class="sub-nav-btn" data-filter-type="jant_inc" data-filter-value="21">21"</button>
+        </div>
+      </div>
+
+      <!-- BJ On Aralığı Accordion (Jant için) -->
+      <div class="accordion hidden" id="jantBjonGroup">
+        <button class="accordion-header open" id="accBjonBtn">
+          <div class="acc-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+            </svg>
+            BJ On Aralığı
+          </div>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-body expand" id="jantBjonMenu">
+          <button class="sub-nav-btn active" data-filter-type="jant_bjon" data-filter-value="all">Tümü</button>
+          <button class="sub-nav-btn" data-filter-type="jant_bjon" data-filter-value="4x100">4x100</button>
+          <button class="sub-nav-btn" data-filter-type="jant_bjon" data-filter-value="4x108">4x108</button>
+          <button class="sub-nav-btn" data-filter-type="jant_bjon" data-filter-value="4x114.3">4x114.3</button>
+          <button class="sub-nav-btn" data-filter-type="jant_bjon" data-filter-value="5x100">5x100</button>
+          <button class="sub-nav-btn" data-filter-type="jant_bjon" data-filter-value="5x108">5x108</button>
+          <button class="sub-nav-btn" data-filter-type="jant_bjon" data-filter-value="5x112">5x112</button>
+          <button class="sub-nav-btn" data-filter-type="jant_bjon" data-filter-value="5x114.3">5x114.3</button>
+          <button class="sub-nav-btn" data-filter-type="jant_bjon" data-filter-value="5x120">5x120</button>
+        </div>
+      </div>
+
+      <!-- Ofset Accordion (Jant için) -->
+      <div class="accordion hidden" id="jantOfsetGroup">
+        <button class="accordion-header open" id="accOfsetBtn">
+          <div class="acc-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Ofset
+          </div>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-body expand" id="jantOfsetMenu">
+          <button class="sub-nav-btn active" data-filter-type="jant_ofset" data-filter-value="all">Tümü</button>
+          <button class="sub-nav-btn" data-filter-type="jant_ofset" data-filter-value="ET25">ET25</button>
+          <button class="sub-nav-btn" data-filter-type="jant_ofset" data-filter-value="ET30">ET30</button>
+          <button class="sub-nav-btn" data-filter-type="jant_ofset" data-filter-value="ET35">ET35</button>
+          <button class="sub-nav-btn" data-filter-type="jant_ofset" data-filter-value="ET38">ET38</button>
+          <button class="sub-nav-btn" data-filter-type="jant_ofset" data-filter-value="ET40">ET40</button>
+          <button class="sub-nav-btn" data-filter-type="jant_ofset" data-filter-value="ET42">ET42</button>
+          <button class="sub-nav-btn" data-filter-type="jant_ofset" data-filter-value="ET45">ET45</button>
+        </div>
+      </div>
+
+      <!-- Göbek Accordion (Jant için) -->
+      <div class="accordion hidden" id="jantGoebekGroup">
+        <button class="accordion-header open" id="accGoebekBtn">
+          <div class="acc-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <circle cx="12" cy="12" r="4" stroke-width="2"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+            </svg>
+            Göbek
+          </div>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-body expand" id="jantGoebekMenu">
+          <button class="sub-nav-btn active" data-filter-type="jant_goebek" data-filter-value="all">Tümü</button>
+          <button class="sub-nav-btn" data-filter-type="jant_goebek" data-filter-value="54.1">54.1</button>
+          <button class="sub-nav-btn" data-filter-type="jant_goebek" data-filter-value="56.6">56.6</button>
+          <button class="sub-nav-btn" data-filter-type="jant_goebek" data-filter-value="57.1">57.1</button>
+          <button class="sub-nav-btn" data-filter-type="jant_goebek" data-filter-value="60.1">60.1</button>
+          <button class="sub-nav-btn" data-filter-type="jant_goebek" data-filter-value="63.4">63.4</button>
+          <button class="sub-nav-btn" data-filter-type="jant_goebek" data-filter-value="66.6">66.6</button>
+          <button class="sub-nav-btn" data-filter-type="jant_goebek" data-filter-value="72.6">72.6</button>
         </div>
       </div>
 
@@ -110,7 +220,7 @@
         </button>
 
         <div class="header-logo" style="margin: 0 auto; text-align: center; display: flex; justify-content: center;">
-            <img src="logo.jpg" alt="Balcı Logo" style="height: 48px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
+            <img src="logo.jpg" alt="Balcı Logo" style="height: 52px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
         </div>
 
         <div class="header-actions">
