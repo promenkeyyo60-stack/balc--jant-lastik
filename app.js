@@ -53,12 +53,12 @@ const tabJant = document.getElementById("tabJant");
 // ---- PRODUCT IMAGES ----
 const TIRE_IMAGE_SRC = "tire.png";
 const JANT_IMAGE_SRC = "jant_17.png"; // Varsayılan jant görseli
-const PT311_IMAGE_SRC = "pt311.jpg"; // PT311 model görseli
+const PT311_IMAGE_SRC = "pt311.jpg"; // Elegant PT311 model görseli
 
 // Model bazlı özel görsel eşleştirme
 function getModelImage(product) {
   const desc = ((product.description || '') + ' ' + (product.model || '')).toUpperCase();
-  if (desc.includes('PT311')) return PT311_IMAGE_SRC;
+  if (desc.includes('ELEGANT') || desc.includes('PT311') || desc.includes('PT 311')) return PT311_IMAGE_SRC;
   return null;
 }
 
