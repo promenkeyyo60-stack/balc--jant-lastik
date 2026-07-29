@@ -709,11 +709,12 @@ html, body {
 .card-image-wrap {
   position: relative;
   background: #111111;
-  padding: 16px 10px 10px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 130px;
+  min-height: 140px;
+  overflow: hidden;
   border-bottom: 1px solid var(--border);
 }
 
@@ -729,10 +730,9 @@ html, body {
 /* Image fits */
 .card-image-wrap img {
   width: 100%;
-  max-width: 140px;
-  height: auto;
-  object-fit: contain;
-  /* Siyah arka planı beyaz üzerinde şeffaf yapar */
+  height: 140px;
+  object-fit: cover;
+  object-position: center;
   mix-blend-mode: screen;
   filter: contrast(1.1) brightness(1.05);
   transition: transform 0.3s ease;
