@@ -55,22 +55,27 @@ const TIRE_IMAGE_SRC = "tire.png";
 const JANT_IMAGE_SRC = "jant_17.png"; // Varsayılan jant görseli
 
 // ---- INITIALIZATION ----
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const splash = document.getElementById("splash");
-  // Timeline:
-  // 0.0s  - Car fades in from top
-  // 0.8s  - Letters start appearing one by one
-  // 4.5s  - Splash fades out, app appears
+  const savedSegment = localStorage.getItem("activeSegment");
 
-  setTimeout(() => {
-    splash.classList.add("fade-out");
+  if (savedSegment && (savedSegment === "jant" || savedSegment === "lastik")) {
+    // Sayfa yenilendiğinde kalınan segmentten başla (uzun açılış animasyonunu atla)
+    splash.classList.add("hidden");
+    appView.classList.remove("hidden");
+    selectSegment(savedSegment, true);
+    tryFetchAllExcel();
+  } else {
+    // İlk giriş veya ana menüye dönüş: açılış ekranı gösterilsin
     setTimeout(() => {
-      splash.classList.add("hidden");
-      appView.classList.remove("hidden");
-      // Show segment selector first, load data in background
-      tryFetchAllExcel();
-    }, 700);
-  }, 4500);
+      splash.classList.add("fade-out");
+      setTimeout(() => {
+        splash.classList.add("hidden");
+        appView.classList.remove("hidden");
+        tryFetchAllExcel();
+      }, 700);
+    }, 4500);
+  }
 });
 
 // ---- SIDEBAR & ACCORDIONS ----
@@ -122,8 +127,9 @@ let currentJantOfset = "all";
 let currentJantGoebek = "all";
 
 // ---- SEGMENT SELECTOR ----
-function selectSegment(type) {
+function selectSegment(type, isRestore = false) {
   activeSegment = type;
+  localStorage.setItem("activeSegment", type);
   
   // Hide selector, show product view
   segmentSelector.classList.add("hidden");
@@ -149,15 +155,34 @@ function selectSegment(type) {
     lastikBrandsGroup?.classList.remove("hidden");
   }
 
-  // Reset filters
-  currentCat = "all";
-  currentBrand = "all";
-  currentJantInc = "all";
-  currentJantBjon = "all";
-  currentJantOfset = "all";
-  currentJantGoebek = "all";
-  searchQuery = "";
-  searchInput.value = "";
+  // Restore or reset filters
+  if (isRestore) {
+    currentCat = sessionStorage.getItem("currentCat") || "all";
+    currentBrand = sessionStorage.getItem("currentBrand") || "all";
+    currentJantInc = sessionStorage.getItem("currentJantInc") || "all";
+    currentJantBjon = sessionStorage.getItem("currentJantBjon") || "all";
+    currentJantOfset = sessionStorage.getItem("currentJantOfset") || "all";
+    currentJantGoebek = sessionStorage.getItem("currentJantGoebek") || "all";
+    searchQuery = sessionStorage.getItem("searchQuery") || "";
+    searchInput.value = searchQuery;
+  } else {
+    currentCat = "all";
+    currentBrand = "all";
+    currentJantInc = "all";
+    currentJantBjon = "all";
+    currentJantOfset = "all";
+    currentJantGoebek = "all";
+    searchQuery = "";
+    searchInput.value = "";
+
+    sessionStorage.setItem("currentCat", "all");
+    sessionStorage.setItem("currentBrand", "all");
+    sessionStorage.setItem("currentJantInc", "all");
+    sessionStorage.setItem("currentJantBjon", "all");
+    sessionStorage.setItem("currentJantOfset", "all");
+    sessionStorage.setItem("currentJantGoebek", "all");
+    sessionStorage.setItem("searchQuery", "");
+  }
   
   buildDynamicMenus();
   renderProducts();
@@ -165,6 +190,7 @@ function selectSegment(type) {
 
 function goBackToSelector() {
   activeSegment = null;
+  localStorage.removeItem("activeSegment");
   segmentSelector.classList.remove("hidden");
   segmentHeader.classList.add("hidden");
   productSection.style.display = "none";
@@ -239,7 +265,9 @@ async function fetchVeriExcel() {
   } finally {
     if (isFirstLoad) {
       loadingOverlay.classList.add("hidden");
-      productSection.style.display = "none";
+      if (!activeSegment) {
+        productSection.style.display = "none";
+      }
     }
   }
 }
@@ -426,8 +454,8 @@ function buildDynamicMenus() {
       btn.parentElement.querySelectorAll(".sub-nav-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
-      if (type === "category") currentCat = val;
-      if (type === "brand") currentBrand = val;
+      if (type === "category") { currentCat = val; sessionStorage.setItem("currentCat", val); }
+      if (type === "brand") { currentBrand = val; sessionStorage.setItem("currentBrand", val); }
 
       toggleSidebar();
       renderProducts();
