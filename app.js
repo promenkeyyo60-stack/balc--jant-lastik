@@ -140,25 +140,13 @@ function selectSegment(type) {
   // Sidebar filtrelerini segment'e göre göster/gizle
   const lastikFiltersGroup = document.getElementById("lastikFiltersGroup");
   const lastikBrandsGroup  = document.getElementById("lastikBrandsGroup");
-  const jantIncGroup    = document.getElementById("jantIncGroup");
-  const jantBjonGroup   = document.getElementById("jantBjonGroup");
-  const jantOfsetGroup  = document.getElementById("jantOfsetGroup");
-  const jantGoebekGroup = document.getElementById("jantGoebekGroup");
 
   if (type === "jant") {
-    lastikFiltersGroup?.classList.add("hidden");
-    lastikBrandsGroup?.classList.add("hidden");
-    jantIncGroup?.classList.remove("hidden");
-    jantBjonGroup?.classList.remove("hidden");
-    jantOfsetGroup?.classList.remove("hidden");
-    jantGoebekGroup?.classList.remove("hidden");
+    lastikFiltersGroup?.classList.remove("hidden");
+    lastikBrandsGroup?.classList.remove("hidden");
   } else {
     lastikFiltersGroup?.classList.remove("hidden");
     lastikBrandsGroup?.classList.remove("hidden");
-    jantIncGroup?.classList.add("hidden");
-    jantBjonGroup?.classList.add("hidden");
-    jantOfsetGroup?.classList.add("hidden");
-    jantGoebekGroup?.classList.add("hidden");
   }
 
   // Reset filters
@@ -407,13 +395,22 @@ function buildDynamicMenus() {
     if (p.brand) brands.add(p.brand.toUpperCase());
   });
 
-  // Populate Categories (lastik için)
-  categoriesMenu.innerHTML = `<button class="sub-nav-btn active" data-filter-type="category" data-filter-value="all">Tümü</button>`;
-  [...categories].sort().forEach(cat => {
-    categoriesMenu.innerHTML += `<button class="sub-nav-btn" data-filter-type="category" data-filter-value="${cat}">${cat}</button>`;
-  });
+  // Populate Categories
+  if (activeSegment === "jant") {
+    // Jant için sabit kategori: sadece "Klasik Jant"
+    categoriesMenu.innerHTML = `
+      <button class="sub-nav-btn active" data-filter-type="category" data-filter-value="all">Tümü</button>
+      <button class="sub-nav-btn" data-filter-type="category" data-filter-value="KLASİK JANT">Klasik Jant</button>
+    `;
+  } else {
+    // Lastik için dinamik kategori listesi
+    categoriesMenu.innerHTML = `<button class="sub-nav-btn active" data-filter-type="category" data-filter-value="all">Tümü</button>`;
+    [...categories].sort().forEach(cat => {
+      categoriesMenu.innerHTML += `<button class="sub-nav-btn" data-filter-type="category" data-filter-value="${cat}">${cat}</button>`;
+    });
+  }
 
-  // Populate Brands (lastik için)
+  // Populate Brands - her iki segment için dinamik marka listesi
   brandsMenu.innerHTML = `<button class="sub-nav-btn active" data-filter-type="brand" data-filter-value="all">Tümü</button>`;
   [...brands].sort().forEach(brand => {
     brandsMenu.innerHTML += `<button class="sub-nav-btn" data-filter-type="brand" data-filter-value="${brand}">${brand}</button>`;
@@ -436,43 +433,6 @@ function buildDynamicMenus() {
     });
   });
 
-  // Bind clicks - jant filtreleri
-  const jantFilterMenuIds = [
-    { id: "jantIncMenu",    state: "currentJantInc" },
-    { id: "jantBjonMenu",   state: "currentJantBjon" },
-    { id: "jantOfsetMenu",  state: "currentJantOfset" },
-    { id: "jantGoebekMenu", state: "currentJantGoebek" },
-  ];
-  jantFilterMenuIds.forEach(({ id }) => {
-    const menu = document.getElementById(id);
-    if (!menu) return;
-    menu.querySelectorAll(".sub-nav-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const filterType = btn.dataset.filterType;
-        const val = btn.dataset.filterValue;
-        menu.querySelectorAll(".sub-nav-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        if (filterType === "jant_inc")    currentJantInc    = val;
-        if (filterType === "jant_bjon")   currentJantBjon   = val;
-        if (filterType === "jant_ofset")  currentJantOfset  = val;
-        if (filterType === "jant_goebek") currentJantGoebek = val;
-        toggleSidebar();
-        renderProducts();
-      });
-    });
-  });
-
-  // Jant accordion'larını açmak için accordion toggle
-  document.querySelectorAll("#jantIncGroup .accordion-header, #jantBjonGroup .accordion-header, #jantOfsetGroup .accordion-header, #jantGoebekGroup .accordion-header").forEach(header => {
-    // Mevcut listener'ları tekrar eklemekten kaçın
-    if (header.dataset.listenerBound) return;
-    header.dataset.listenerBound = "true";
-    header.addEventListener("click", () => {
-      header.classList.toggle("open");
-      const body = header.nextElementSibling;
-      body.classList.toggle("expand");
-    });
-  });
 }
 
 
@@ -557,12 +517,14 @@ function renderProducts() {
     card.className = "product-card";
     card.style.animationDelay = `${Math.min(idx * 0.04, 0.4)}s`;
     
-    // Stok bilgisi varsa badge
-    const stokBadge = p.stok ? `<span class="card-stok-badge">Stok: ${p.stok}</span>` : '';
+    // Sağ üst mevsim amblem rozeti (jant ise gösterilmez)
+    const seasonBadge = activeSegment !== 'jant'
+      ? `<span class="card-season-badge ${season.cls}" title="${season.label}">${season.emoji}</span>`
+      : '';
     
     card.innerHTML = `
       <span class="card-category-badge">${p.category || (activeSegment === "jant" ? "JANT" : "LASTİK")}</span>
-      ${stokBadge}
+      ${seasonBadge}
       <div class="card-image-wrap">
         <img src="${imgSrc}" alt="${p.description}" loading="lazy" onerror="this.src='${activeSegment === 'jant' ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC}'" />
       </div>
@@ -573,6 +535,7 @@ function renderProducts() {
         <div class="card-meta">
           ${p.dot ? `<span class="meta-tag dot">DOT ${p.dot}</span>` : ""}
           ${p.code ? `<span class="meta-tag code">#${p.code}</span>` : ""}
+          ${p.stok ? `<span class="meta-tag stok" style="margin-left:auto;">STK:${p.stok}</span>` : ""}
         </div>
       </div>
     `;

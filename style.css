@@ -810,6 +810,12 @@ html, body {
   background: rgba(229,57,53,0.08);
 }
 
+.meta-tag.stok {
+  color: #60A5FA;
+  border-color: rgba(96,165,250,0.4);
+  background: rgba(96,165,250,0.1);
+}
+
 /* ============================
    NO RESULTS
    ============================ */
