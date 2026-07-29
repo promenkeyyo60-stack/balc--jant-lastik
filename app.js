@@ -535,7 +535,7 @@ function renderProducts() {
         <div class="card-meta">
           ${p.dot ? `<span class="meta-tag dot">DOT ${p.dot}</span>` : ""}
           ${p.code ? `<span class="meta-tag code">#${p.code}</span>` : ""}
-          ${p.stok ? `<span class="meta-tag stok" style="margin-left:auto;">STK:${p.stok}</span>` : ""}
+          ${p.stok ? `<span class="meta-tag stok">STK: ${p.stok}</span>` : ""}
         </div>
       </div>
     `;
