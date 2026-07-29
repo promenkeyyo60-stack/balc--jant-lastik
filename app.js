@@ -713,7 +713,7 @@ function openModal(p) {
       <div class="detail-value accent">${p.inc ? p.inc + '"' : "-"}</div>
     </div>
     <div class="detail-card">
-      <div class="detail-label">🔩 BJ On Aralığı</div>
+      <div class="detail-label">🔩 Bijon Aralığı</div>
       <div class="detail-value">${p.bjon || "-"}</div>
     </div>
     <div class="detail-card">
