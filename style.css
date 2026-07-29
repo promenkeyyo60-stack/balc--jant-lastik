@@ -940,12 +940,22 @@ html, body {
   border: 1px solid var(--border);
 }
 
+.modal-image-wrap.white-bg {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
 .modal-image-wrap img {
   max-width: 220px;
   width: 100%;
   height: auto;
   mix-blend-mode: screen;
   filter: contrast(1.1) brightness(1.05);
+}
+
+.modal-image-wrap.white-bg img {
+  mix-blend-mode: normal;
+  filter: none;
 }
 
 .modal-header {

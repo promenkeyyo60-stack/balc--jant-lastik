@@ -807,7 +807,7 @@ function openModal(p) {
   `;
 
   modalContent.innerHTML = `
-    <div class="modal-image-wrap">
+    <div class="modal-image-wrap${getModelImage(p) ? ' white-bg' : ''}">
       <img src="${modalImg}" alt="${p.description}" onerror="this.src='${activeSegment === 'jant' ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC}'" />
     </div>
 
