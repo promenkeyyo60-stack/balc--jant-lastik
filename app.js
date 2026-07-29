@@ -761,10 +761,7 @@ function openModal(p) {
       <div class="detail-label">🏷️ Ürün Kodu</div>
       <div class="detail-value accent">${p.code || "-"}</div>
     </div>
-    <div class="detail-card" style="grid-column:1/-1">
-      <div class="detail-label">Tam Açıklama</div>
-      <div class="detail-value" style="font-size:0.8rem;font-weight:500;color:var(--text-secondary);line-height:1.5">${p.description}</div>
-    </div>
+
   ` : `
     <div class="detail-card">
       <div class="detail-label">Ürün Kodu</div>
@@ -787,10 +784,7 @@ function openModal(p) {
       <div class="detail-label">📦 Stok Durumu</div>
       <div class="detail-value accent" style="font-size:1.1rem;">${p.stok}</div>
     </div>` : ''}
-    <div class="detail-card" style="grid-column:1/-1">
-      <div class="detail-label">Tam Açıklama</div>
-      <div class="detail-value" style="font-size:0.8rem;font-weight:500;color:var(--text-secondary);line-height:1.5">${p.description}</div>
-    </div>
+
   `;
 
   modalContent.innerHTML = `
