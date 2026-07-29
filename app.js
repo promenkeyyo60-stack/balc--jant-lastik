@@ -58,8 +58,16 @@ const PT311_IMAGE_SRC = "pt311.jpg"; // Elegant PT311 model görseli
 // Model bazlı özel görsel eşleştirme
 function getModelImage(product) {
   const desc = ((product.description || '') + ' ' + (product.model || '')).toUpperCase();
-  if (desc.includes('ELEGANT') || desc.includes('PT311') || desc.includes('PT 311')) return PT311_IMAGE_SRC;
+  if (desc.includes('ELEGANT') && (desc.includes('PT311') || desc.includes('PT 311'))) return PT311_IMAGE_SRC;
   return null;
+}
+
+// Ürün görseli öncelik sırası: model bazlı > Excel'deki özel görsel > segment varsayılan
+function getProductImage(p) {
+  const modelImg = getModelImage(p);
+  if (modelImg) return modelImg;
+  if (p.image && p.image !== TIRE_IMAGE_SRC && p.image !== JANT_IMAGE_SRC) return p.image;
+  return activeSegment === "jant" ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC;
 }
 
 // ---- INITIALIZATION ----
@@ -589,8 +597,8 @@ function renderProducts() {
     const matchGoebek = activeSegment !== "jant" || currentJantGoebek === "all" || !jantGobekVal  || jantGobekVal.toUpperCase()  === currentJantGoebek.toUpperCase();
     
     const q = searchQuery.toLowerCase();
-    const qNorm = q.replace(/[^a-z0-9]/gi, '').toLowerCase();
-    const normalize = (s) => (s || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const qNorm = q.replace(/r/gi, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const normalize = (s) => (s || '').replace(/r/gi, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
     const matchSearch = !q || (
       (p.size        || '').toLowerCase().includes(q) ||
       (p.model       || '').toLowerCase().includes(q) ||
@@ -637,10 +645,8 @@ function renderProducts() {
     const displayBrand = p.brand || "";
     const loadStr = p.load ? ` ${p.load}` : "";
 
-    // Ürüne özel görsel: Excel'deki 'Gorsel' sütunu > model bazlı > segment bazlı varsayılan
-    const imgSrc = p.image
-      ? p.image
-      : (getModelImage(p) || (activeSegment === "jant" ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC));
+    // Ürüne özel görsel: model bazlı > Excel özel görsel > segment varsayılan
+    const imgSrc = getProductImage(p);
 
     const card = document.createElement("div");
     card.className = "product-card";
@@ -743,9 +749,7 @@ function openModal(p) {
   const seasonColorCls = season.cls === "summer" ? "summer-color" : season.cls === "winter" ? "winter-color" : "green-color";
 
   // Modal'da da ürüne özel görsel kullan
-  const modalImg = p.image
-    ? p.image
-    : (getModelImage(p) || (activeSegment === "jant" ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC));
+  const modalImg = getProductImage(p);
 
   const isJant = activeSegment === "jant";
 
