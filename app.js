@@ -315,6 +315,8 @@ function parseAndMapExcelData(rawData) {
     const d = (desc || '').toUpperCase();
     if (d.includes('SNOWMASTER') || d.includes('SNOW') || d.includes('WINTER') || d.includes('KIŞ') || d.includes('PT435')) return 'KIŞ';
     if (d.includes('YAZ') || d.includes('SUMMER') || d.includes('UHP')) return 'YAZ';
+    // Petlas Elegant PT311 → yazlık lastik
+    if ((d.includes('ELEGANT') && (d.includes('PT311') || d.includes('PT 311')))) return 'YAZ';
     return '4 Mevsim';
   }
 
