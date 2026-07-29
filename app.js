@@ -53,6 +53,14 @@ const tabJant = document.getElementById("tabJant");
 // ---- PRODUCT IMAGES ----
 const TIRE_IMAGE_SRC = "tire.png";
 const JANT_IMAGE_SRC = "jant_17.png"; // Varsayılan jant görseli
+const PT311_IMAGE_SRC = "pt311.jpg"; // PT311 model görseli
+
+// Model bazlı özel görsel eşleştirme
+function getModelImage(product) {
+  const desc = ((product.description || '') + ' ' + (product.model || '')).toUpperCase();
+  if (desc.includes('PT311')) return PT311_IMAGE_SRC;
+  return null;
+}
 
 // ---- INITIALIZATION ----
 document.addEventListener("DOMContentLoaded", () => {
@@ -629,10 +637,10 @@ function renderProducts() {
     const displayBrand = p.brand || "";
     const loadStr = p.load ? ` ${p.load}` : "";
 
-    // Ürüne özel görsel: Excel'deki 'Gorsel' sütunu > segment bazlı varsayılan > lastik görseli
+    // Ürüne özel görsel: Excel'deki 'Gorsel' sütunu > model bazlı > segment bazlı varsayılan
     const imgSrc = p.image
       ? p.image
-      : activeSegment === "jant" ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC;
+      : (getModelImage(p) || (activeSegment === "jant" ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC));
 
     const card = document.createElement("div");
     card.className = "product-card";
@@ -737,7 +745,7 @@ function openModal(p) {
   // Modal'da da ürüne özel görsel kullan
   const modalImg = p.image
     ? p.image
-    : activeSegment === "jant" ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC;
+    : (getModelImage(p) || (activeSegment === "jant" ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC));
 
   const isJant = activeSegment === "jant";
 
