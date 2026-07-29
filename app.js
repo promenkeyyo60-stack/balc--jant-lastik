@@ -581,12 +581,19 @@ function renderProducts() {
     const matchGoebek = activeSegment !== "jant" || currentJantGoebek === "all" || !jantGobekVal  || jantGobekVal.toUpperCase()  === currentJantGoebek.toUpperCase();
     
     const q = searchQuery.toLowerCase();
+    const qNorm = q.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const normalize = (s) => (s || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
     const matchSearch = !q || (
       (p.size        || '').toLowerCase().includes(q) ||
       (p.model       || '').toLowerCase().includes(q) ||
       (p.brand       || '').toLowerCase().includes(q) ||
       (p.code        || '').toLowerCase().includes(q) ||
-      (p.description || '').toLowerCase().includes(q)
+      (p.description || '').toLowerCase().includes(q) ||
+      normalize(p.size).includes(qNorm) ||
+      normalize(p.model).includes(qNorm) ||
+      normalize(p.brand).includes(qNorm) ||
+      normalize(p.code).includes(qNorm) ||
+      normalize(p.description).includes(qNorm)
     );
     return matchCat && matchBrand && matchInc && matchBjon && matchOfset && matchGoebek && matchSearch;
   });
