@@ -6,7 +6,7 @@
 let LASTIK_PRODUCTS = [];
 let JANT_PRODUCTS = [];
 let activeSegment = null; // 'lastik' or 'jant'
-let currentCat = "all";
+
 let currentBrand = "all";
 let searchQuery = "";
 
@@ -40,7 +40,6 @@ const loadingOverlay = document.getElementById("loadingOverlay");
 const activeFiltersContainer = document.getElementById("activeFiltersContainer");
 const activeFiltersDiv = document.getElementById("activeFilters");
 
-const categoriesMenu = document.getElementById("categoriesMenu");
 const brandsMenu = document.getElementById("brandsMenu");
 
 // Segment
@@ -175,7 +174,6 @@ function selectSegment(type, isRestore = false) {
 
   // Restore or reset filters
   if (isRestore) {
-    currentCat = sessionStorage.getItem("currentCat") || "all";
     currentBrand = sessionStorage.getItem("currentBrand") || "all";
     currentJantInc = sessionStorage.getItem("currentJantInc") || "all";
     currentJantBjon = sessionStorage.getItem("currentJantBjon") || "all";
@@ -184,7 +182,6 @@ function selectSegment(type, isRestore = false) {
     searchQuery = sessionStorage.getItem("searchQuery") || "";
     searchInput.value = searchQuery;
   } else {
-    currentCat = "all";
     currentBrand = "all";
     currentJantInc = "all";
     currentJantBjon = "all";
@@ -193,7 +190,6 @@ function selectSegment(type, isRestore = false) {
     searchQuery = "";
     searchInput.value = "";
 
-    sessionStorage.setItem("currentCat", "all");
     sessionStorage.setItem("currentBrand", "all");
     sessionStorage.setItem("currentJantInc", "all");
     sessionStorage.setItem("currentJantBjon", "all");
@@ -337,9 +333,8 @@ function parseAndMapExcelData(rawData) {
   }
 
   return rawData.map((row, index) => {
-    // -- Doğrudan birleşik sütun adlarını oku (STOK.xls'ten dönüştürüldü) --
+    // -- Doğrudan birleşik sütun adlarını oku --
     const tip        = getColVal(row, ['tip']);               // 'LASTİK' veya 'JANT'
-    const kategori   = getColVal(row, ['kategori', 'sinif', 'class', 'type', 'tur', 'arac']);
     const marka      = getColVal(row, ['marka', 'brand', 'make']);
     const rawKod     = getColVal(row, ['kod', 'kodu', 'code', 'sku', 'no', 'id', 'ref', 'stok']);
     const kod        = rawKod ? String(rawKod).replace(/^[\/#\\]+/, '').trim() : '';
@@ -367,12 +362,8 @@ function parseAndMapExcelData(rawData) {
       if (parts.length > si) finalModel = parts.slice(si).join(' ').trim();
     }
 
-    // Tip belirsizse Kategori'den tahmin et
-    const finalTip = tip ? tip.toUpperCase()
-                         : (kategori.toUpperCase() === 'JANT' ? 'JANT' : 'LASTİK');
-
-    // Kategori belirsizse varsayılan
-    const finalKategori = kategori || (finalTip === 'JANT' ? 'BİNEK' : 'BİNEK');
+    // Tip belirsizse LASTİK varsayılan
+    const finalTip = tip ? tip.toUpperCase() : 'LASTİK';
 
     let inc    = getColVal(row, ['inc', 'inch', 'cap_inch', 'jant_cap', 'jantcap', 'rim_size']);
     let bjon   = getColVal(row, ['bjon', 'pcd', 'delik_araligi', 'bolt', 'civata', 'delik']);
@@ -414,7 +405,6 @@ function parseAndMapExcelData(rawData) {
     return {
       id:          index + 1,
       tip:         finalTip,
-      category:    finalKategori,
       code:        kod,
       description: aciklama || 'İsimsiz Ürün',
       brand:       marka,
@@ -436,28 +426,11 @@ function parseAndMapExcelData(rawData) {
 
 function buildDynamicMenus() {
   const products = activeSegment === "jant" ? JANT_PRODUCTS : LASTIK_PRODUCTS;
-  const categories = new Set();
   const brands = new Set();
 
   products.forEach(p => {
-    if (p.category) categories.add(p.category.toUpperCase());
     if (p.brand) brands.add(p.brand.toUpperCase());
   });
-
-  // Populate Categories
-  if (activeSegment === "jant") {
-    // Jant için sabit kategori: sadece "Klasik Jant"
-    categoriesMenu.innerHTML = `
-      <button class="sub-nav-btn active" data-filter-type="category" data-filter-value="all">Tümü</button>
-      <button class="sub-nav-btn" data-filter-type="category" data-filter-value="KLASİK JANT">Klasik Jant</button>
-    `;
-  } else {
-    // Lastik için dinamik kategori listesi
-    categoriesMenu.innerHTML = `<button class="sub-nav-btn active" data-filter-type="category" data-filter-value="all">Tümü</button>`;
-    [...categories].sort().forEach(cat => {
-      categoriesMenu.innerHTML += `<button class="sub-nav-btn" data-filter-type="category" data-filter-value="${cat}">${cat}</button>`;
-    });
-  }
 
   // Populate Brands - her iki segment için dinamik marka listesi
   brandsMenu.innerHTML = `<button class="sub-nav-btn active" data-filter-type="brand" data-filter-value="all">Tümü</button>`;
@@ -465,17 +438,16 @@ function buildDynamicMenus() {
     brandsMenu.innerHTML += `<button class="sub-nav-btn" data-filter-type="brand" data-filter-value="${brand}">${brand}</button>`;
   });
 
-  // Bind clicks - lastik filtreleri
-  document.querySelectorAll("#categoriesMenu .sub-nav-btn, #brandsMenu .sub-nav-btn").forEach(btn => {
+  // Bind clicks
+  document.querySelectorAll("#brandsMenu .sub-nav-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
-      const type = btn.dataset.filterType;
       const val = btn.dataset.filterValue;
       
       btn.parentElement.querySelectorAll(".sub-nav-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
-      if (type === "category") { currentCat = val; sessionStorage.setItem("currentCat", val); }
-      if (type === "brand") { currentBrand = val; sessionStorage.setItem("currentBrand", val); }
+      currentBrand = val;
+      sessionStorage.setItem("currentBrand", val);
 
       toggleSidebar();
       renderProducts();
@@ -585,11 +557,9 @@ function renderProducts() {
   const products = activeSegment === "jant" ? JANT_PRODUCTS : LASTIK_PRODUCTS;
   
   const filtered = products.filter(p => {
-    const matchCat = currentCat === "all" || (p.category || '').toUpperCase() === currentCat;
     const matchBrand = currentBrand === "all" || (p.brand || '').toUpperCase() === currentBrand;
 
     // Jant spesifik filtreler
-    // Eğer üründe alan yoksa (geçici veri dönemi) filtre bypass edilir - tüm jantlar görünür
     const jantIncVal    = (p.inc    || '').trim();
     const jantBjonVal   = (p.bjon   || '').trim();
     const jantOfsetVal  = (p.ofset  || '').trim();
@@ -615,7 +585,7 @@ function renderProducts() {
       normalize(p.code).includes(qNorm) ||
       normalize(p.description).includes(qNorm)
     );
-    return matchCat && matchBrand && matchInc && matchBjon && matchOfset && matchGoebek && matchSearch;
+    return matchBrand && matchInc && matchBjon && matchOfset && matchGoebek && matchSearch;
   });
 
   productGrid.innerHTML = "";
@@ -626,7 +596,7 @@ function renderProducts() {
     productGrid.classList.add("hidden");
     productCount.textContent = "0 Ürün";
     const typeName = activeSegment === "jant" ? "jant" : "lastik";
-    noResultsMsg.innerHTML = `<strong>veri.xlsx'te ${typeName === 'jant' ? 'JANT' : 'LASTİK'} kategorisi bulunamadı.</strong><br/><br/>Excel dosyanızda <strong>Kategori</strong> sütununda <strong>${typeName === 'jant' ? 'JANT' : 'LASTİK'}</strong> yazılı satırlar ekleyin.<br/>Ayrıca <strong>baslat.bat</strong> dosyasına çift tıklayarak çalıştırmayı deneyin.`;
+    noResultsMsg.innerHTML = `<strong>veri.xlsx'te ${typeName === 'jant' ? 'JANT' : 'LASTİK'} verisi bulunamadı.</strong><br/><br/>Excel dosyanızda <strong>TİP</strong> sütununda <strong>${typeName === 'jant' ? 'JANT' : 'LASTİK'}</strong> yazılı satırlar ekleyin.<br/>Ayrıca <strong>baslat.bat</strong> dosyasına çift tıklayarak çalıştırmayı deneyin.`;
     return;
   }
 
@@ -662,7 +632,6 @@ function renderProducts() {
       : '';
     
     card.innerHTML = `
-      <span class="card-category-badge">${p.category || (activeSegment === "jant" ? "JANT" : "LASTİK")}</span>
       ${seasonBadge}
       <div class="card-image-wrap${getModelImage(p) ? ' white-bg' : ''}">
         <img src="${imgSrc}" alt="${p.description}" loading="lazy" onerror="this.src='${activeSegment === 'jant' ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC}'" />
@@ -687,16 +656,6 @@ function renderProducts() {
 
 function updateActiveFiltersUI() {
   activeFiltersDiv.innerHTML = "";
-  
-  if (currentCat !== "all") {
-    activeFiltersDiv.innerHTML += `
-      <div class="filter-chip">
-        Kategori: ${currentCat}
-        <button onclick="clearFilter('category')">
-          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>`;
-  }
   
   if (currentBrand !== "all") {
     activeFiltersDiv.innerHTML += `
@@ -727,11 +686,6 @@ function updateActiveFiltersUI() {
 
 // Global functions for inline HTML calls
 window.clearFilter = function(type) {
-  if (type === 'category') {
-    currentCat = 'all';
-    document.querySelectorAll('#categoriesMenu .sub-nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('#categoriesMenu .sub-nav-btn[data-filter-value="all"]').classList.add('active');
-  }
   if (type === 'brand') {
     currentBrand = 'all';
     document.querySelectorAll('#brandsMenu .sub-nav-btn').forEach(b => b.classList.remove('active'));
@@ -815,9 +769,7 @@ function openModal(p) {
       <img src="${modalImg}" alt="${p.description}" onerror="this.src='${activeSegment === 'jant' ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC}'" />
     </div>
 
-    <div class="modal-category-tag">
-      ${p.tip || (activeSegment === "jant" ? "JANT" : "LASTİK")} &bull; ${p.category || ''}
-    </div>
+
 
     <div class="modal-header">
       <div>
