@@ -24,8 +24,8 @@ const searchBar = document.getElementById("searchBar");
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
 const clearSearchBtn = document.getElementById("clearSearch");
-
 const aboutPage = document.getElementById("aboutPage");
+const contactPage = document.getElementById("contactPage");
 const appView = document.getElementById("app");
 
 // Sidebar
@@ -35,12 +35,16 @@ const sidebarOpenBtn = document.getElementById("sidebarOpenBtn");
 const sidebarCloseBtn = document.getElementById("sidebarCloseBtn");
 const navHomeBtn = document.getElementById("navHomeBtn");
 const navAboutBtn = document.getElementById("navAboutBtn");
+const navContactBtn = document.getElementById("navContactBtn");
 const loadingOverlay = document.getElementById("loadingOverlay");
+const segmentDynamicSidebar = document.getElementById("segmentDynamicSidebar");
 
 const activeFiltersContainer = document.getElementById("activeFiltersContainer");
 const activeFiltersDiv = document.getElementById("activeFilters");
 
 const brandsMenu = document.getElementById("brandsMenu");
+const jantIncGroup = document.getElementById("jantIncGroup");
+const jantIncMenu = document.getElementById("jantIncMenu");
 
 // Header
 const mainHeader = document.getElementById("mainHeader");
@@ -98,32 +102,39 @@ function toggleSidebar() {
   }
 }
 
-sidebarOpenBtn.addEventListener("click", toggleSidebar);
-sidebarCloseBtn.addEventListener("click", toggleSidebar);
-sidebarOverlay.addEventListener("click", toggleSidebar);
+sidebarOpenBtn?.addEventListener("click", toggleSidebar);
+sidebarCloseBtn?.addEventListener("click", toggleSidebar);
+sidebarOverlay?.addEventListener("click", toggleSidebar);
 
 document.querySelectorAll(".accordion-header").forEach(header => {
   header.addEventListener("click", () => {
     header.classList.toggle("open");
     const body = header.nextElementSibling;
-    body.classList.toggle("expand");
+    if (body) body.classList.toggle("expand");
   });
 });
 
 // ---- NAVIGATION ----
 function switchTab(tab) {
-  navHomeBtn.classList.remove("active");
-  navAboutBtn.classList.remove("active");
+  navHomeBtn?.classList.remove("active");
+  navAboutBtn?.classList.remove("active");
+  navContactBtn?.classList.remove("active");
   
   if (tab === "home") {
-    navHomeBtn.classList.add("active");
-    aboutPage.classList.add("hidden");
+    navHomeBtn?.classList.add("active");
+    aboutPage?.classList.add("hidden");
+    contactPage?.classList.add("hidden");
     if (activeSegment) {
-      productSection.scrollTo({ top: 0, behavior: "smooth" });
+      productSection?.scrollTo({ top: 0, behavior: "smooth" });
     }
   } else if (tab === "about") {
-    navAboutBtn.classList.add("active");
-    aboutPage.classList.remove("hidden");
+    navAboutBtn?.classList.add("active");
+    aboutPage?.classList.remove("hidden");
+    contactPage?.classList.add("hidden");
+  } else if (tab === "contact") {
+    navContactBtn?.classList.add("active");
+    contactPage?.classList.remove("hidden");
+    aboutPage?.classList.add("hidden");
   }
   toggleSidebar();
 }
@@ -139,11 +150,12 @@ function selectSegment(type, isRestore = false) {
   activeSegment = type;
   localStorage.setItem("activeSegment", type);
   
-  // Hide selector, show main header and product view with white theme
+  // Hide selector, show main header, product view, and segment categories in sidebar
   segmentSelector.classList.add("hidden");
   appView.classList.add("segment-active");
   if (mainHeader) mainHeader.classList.remove("hidden");
   segmentHeader.classList.remove("hidden");
+  if (segmentDynamicSidebar) segmentDynamicSidebar.classList.remove("hidden");
   productSection.style.display = "";
   
   // Update tabs
@@ -152,18 +164,6 @@ function selectSegment(type, isRestore = false) {
   
   // Update section label
   sectionLabel.textContent = type === "lastik" ? "Lastikler" : "Jantlar";
-  
-  // Sidebar filtrelerini segment'e göre göster/gizle
-  const lastikFiltersGroup = document.getElementById("lastikFiltersGroup");
-  const lastikBrandsGroup  = document.getElementById("lastikBrandsGroup");
-
-  if (type === "jant") {
-    lastikFiltersGroup?.classList.remove("hidden");
-    lastikBrandsGroup?.classList.remove("hidden");
-  } else {
-    lastikFiltersGroup?.classList.remove("hidden");
-    lastikBrandsGroup?.classList.remove("hidden");
-  }
 
   // Restore or reset filters
   if (isRestore) {
@@ -202,8 +202,10 @@ function goBackToSelector() {
   appView.classList.remove("segment-active");
   if (mainHeader) mainHeader.classList.add("hidden");
   segmentHeader.classList.add("hidden");
+  if (segmentDynamicSidebar) segmentDynamicSidebar.classList.add("hidden");
   productSection.style.display = "none";
   sectionLabel.textContent = "Tüm Ürünler";
+}l.textContent = "Tüm Ürünler";
 }
 
 function toggleLandingSearch() {
