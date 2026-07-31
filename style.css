@@ -46,7 +46,7 @@ html, body {
 .hidden { display: none !important; }
 
 /* ============================
-   SPLASH SCREEN (Türkiye Haritası & Logo Projeksiyon)
+   SPLASH SCREEN (Türkiye Haritası & Şeffaf Yazı Projeksiyonu)
    ============================ */
 .splash {
   position: fixed;
@@ -65,7 +65,7 @@ html, body {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.18) 0%, rgba(10, 10, 10, 0.95) 75%, #050505 100%);
+  background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.2) 0%, rgba(5, 5, 5, 0.95) 75%, #050505 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -76,15 +76,15 @@ html, body {
   pointer-events: none;
 }
 
-/* Harita & Logo Ana Konteyner */
+/* Harita Ana Konteyner (Tam Ekrana Sığacak Büyüklükte) */
 .splash-map-wrap {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 90vw;
-  max-width: 440px;
+  width: 96vw;
+  max-width: 540px;
   height: auto;
 }
 
@@ -92,10 +92,10 @@ html, body {
 .splash-map-img {
   width: 100%;
   height: auto;
-  max-height: 55vh;
+  max-height: 75vh;
   object-fit: contain;
-  filter: drop-shadow(0 0 35px rgba(212, 175, 55, 0.35));
-  animation: mapAppear 1.4s cubic-bezier(0.16, 1, 0.3, 1) both, mapPulse 4s ease-in-out 1.4s infinite alternate;
+  filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.45));
+  animation: mapAppear 1.2s cubic-bezier(0.16, 1, 0.3, 1) both, mapPulse 4s ease-in-out 1.2s infinite alternate;
 }
 
 @keyframes mapAppear {
@@ -108,41 +108,68 @@ html, body {
   to   { filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.55)); transform: scale(1.02); }
 }
 
-/* Logo Projeksiyon Yansıması (Haritanın Üzerinde) */
-.splash-logo-projection {
+/* Haritanın Tam Ortasındaki Şeffaf Yazı Projeksiyonu (Arka Plan YOK) */
+.splash-text-projection {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   z-index: 3;
-  width: 65%;
-  max-width: 260px;
-  animation: logoProjectIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+  width: 75%;
+  max-width: 300px;
+  pointer-events: none;
+  animation: textProjectIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
 }
 
-@keyframes logoProjectIn {
+@keyframes textProjectIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.6);
-    filter: brightness(2) drop-shadow(0 0 50px rgba(212, 175, 55, 1));
+    transform: translate(-50%, -50%) scale(0.7);
+    filter: brightness(2) drop-shadow(0 0 40px rgba(229, 57, 53, 1));
   }
   to {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
-    filter: brightness(1.08) drop-shadow(0 0 30px rgba(212, 175, 55, 0.7));
+    filter: brightness(1.08) drop-shadow(0 0 25px rgba(229, 57, 53, 0.6));
   }
 }
 
-.splash-projected-logo {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  mix-blend-mode: screen;
-  filter: contrast(1.1) brightness(1.08);
-  border-radius: 12px;
+.splash-brand-text {
+  font-family: var(--font);
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #E53935;
+  text-shadow: 0 0 20px rgba(229, 57, 53, 0.9), 0 0 35px rgba(212, 175, 55, 0.6);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.splash-sub-text {
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: #FFFFFF;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.7), 0 0 25px rgba(212, 175, 55, 0.6);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.splash-tag-text {
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.8);
+  margin-top: 6px;
+  text-transform: uppercase;
 }
 
 
@@ -1404,6 +1431,30 @@ html, body {
 
 /* Masaüstü ve Tablet Ekranları (>= 768px) */
 @media (min-width: 768px) {
+  .splash-map-wrap {
+    max-width: 800px;
+  }
+
+  .splash-map-img {
+    max-height: 82vh;
+  }
+
+  .splash-text-projection {
+    max-width: 440px;
+  }
+
+  .splash-brand-text {
+    font-size: 4rem;
+  }
+
+  .splash-sub-text {
+    font-size: 1.5rem;
+  }
+
+  .splash-tag-text {
+    font-size: 0.95rem;
+  }
+
   .header-inner {
     padding: 14px 40px;
   }
