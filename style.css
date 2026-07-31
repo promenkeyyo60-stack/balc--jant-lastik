@@ -1279,17 +1279,20 @@ html, body {
 .segment-selector {
   display: flex;
   flex-direction: row;
+  width: 100%;
+  height: 100vh;
   flex: 1;
   position: relative;
   overflow: hidden;
   min-height: 0;
+  background: #050505;
 }
 
-/* Her yarı bölüm */
+/* Her yarı bölüm (50% / 50% Dengeli) */
 .segment-half {
   flex: 1;
   position: relative;
-  cursor: pointer;
+  cursor: default;
   overflow: hidden;
   display: flex;
   align-items: center;

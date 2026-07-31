@@ -42,6 +42,9 @@ const activeFiltersDiv = document.getElementById("activeFilters");
 
 const brandsMenu = document.getElementById("brandsMenu");
 
+// Header
+const mainHeader = document.getElementById("mainHeader");
+
 // Segment
 const segmentSelector = document.getElementById("segmentSelector");
 const segmentHeader = document.getElementById("segmentHeader");
@@ -136,8 +139,9 @@ function selectSegment(type, isRestore = false) {
   activeSegment = type;
   localStorage.setItem("activeSegment", type);
   
-  // Hide selector, show product view
+  // Hide selector, show main header and product view
   segmentSelector.classList.add("hidden");
+  if (mainHeader) mainHeader.classList.remove("hidden");
   segmentHeader.classList.remove("hidden");
   productSection.style.display = "";
   
@@ -194,6 +198,7 @@ function goBackToSelector() {
   activeSegment = null;
   localStorage.removeItem("activeSegment");
   segmentSelector.classList.remove("hidden");
+  if (mainHeader) mainHeader.classList.add("hidden");
   segmentHeader.classList.add("hidden");
   productSection.style.display = "none";
   sectionLabel.textContent = "Tüm Ürünler";
