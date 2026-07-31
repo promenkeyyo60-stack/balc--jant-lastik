@@ -307,99 +307,105 @@ function parseWorkbook(workbook) {
 }
 
 function parseAndMapExcelData(rawData) {
-  // Mevsim tespiti (açıklama bazlı)
+  // Mevsim tespiti (mevsim sütunu + açıklama bazlı)
   function detectSeason(desc, mevsimCol) {
+    const m = (mevsimCol || '').toUpperCase();
     const d = (desc || '').toUpperCase();
-    // Kışlık: sadece Snowmaster2
-    if (d.includes('SNOWMASTER2') || d.includes('SNOWMASTER 2')) return 'KIŞ';
-    // 4 Mevsim: sadece PT565
-    if (d.includes('PT565')) return '4 Mevsim';
-    // Geri kalan her şey yazlık
+    if (m.includes('KI') || d.includes('SNOWMASTER2') || d.includes('SNOWMASTER 2')) return 'KIŞ';
+    if (m.includes('4') || m.includes('ALL') || d.includes('PT565')) return '4 Mevsim';
     return 'YAZ';
   }
 
-  function getColVal(row, keys) {
-    for (const k of Object.keys(row)) {
-      const kl = k.toLowerCase()
-        .replace(/ı/g, 'i').replace(/ğ/g, 'g')
-        .replace(/ü/g, 'u').replace(/ş/g, 's')
-        .replace(/ö/g, 'o').replace(/ç/g, 'c');
-      if (keys.some(pk => kl.includes(pk))) {
-        const v = String(row[k]).trim();
+  // Önce tam sütun adına bak, yoksa normalize ederek ara
+  function getCol(row, exactNames, fallbackIncludes) {
+    for (const name of exactNames) {
+      if (row[name] !== undefined) {
+        const v = String(row[name]).trim();
         return v === '' || v === 'undefined' ? '' : v;
+      }
+    }
+    if (fallbackIncludes) {
+      for (const k of Object.keys(row)) {
+        const kl = k.toLowerCase()
+          .replace(/ı/g,'i').replace(/ğ/g,'g')
+          .replace(/ü/g,'u').replace(/ş/g,'s')
+          .replace(/ö/g,'o').replace(/ç/g,'c');
+        if (fallbackIncludes.some(pk => kl.includes(pk))) {
+          const v = String(row[k]).trim();
+          return v === '' || v === 'undefined' ? '' : v;
+        }
       }
     }
     return '';
   }
 
   return rawData.map((row, index) => {
-    // -- Doğrudan birleşik sütun adlarını oku --
-    const tip        = getColVal(row, ['tip']);               // 'LASTİK' veya 'JANT'
-    const marka      = getColVal(row, ['marka', 'brand', 'make']);
-    const rawKod     = getColVal(row, ['kod', 'kodu', 'code', 'sku', 'no', 'id', 'ref', 'stok']);
-    const kod        = rawKod ? String(rawKod).replace(/^[\/#\\]+/, '').trim() : '';
-    const aciklama   = getColVal(row, ['aciklama', 'tanim', 'urun', 'description', 'name', 'product']);
-    const ebat       = getColVal(row, ['ebat', 'cap', 'boyut', 'size', 'olcu', 'dimension']);
-    const yuk        = getColVal(row, ['yuk', 'indeks', 'load', 'index']);
-    const model      = getColVal(row, ['model', 'desen', 'pattern']);
-    const mevsimRaw  = getColVal(row, ['mevsim', 'sezon', 'season']);
-    const dot        = getColVal(row, ['dot', 'tarih', 'yil', 'year', 'uretim']);
-    const gorsel     = getColVal(row, ['gorsel', 'resim', 'foto', 'image', 'img', 'picture', 'photo']);
-    const stok       = getColVal(row, ['stok', 'adet', 'quantity', 'qty', 'miktar']);
-
-    // Ebat yoksa açıklamadan çıkar
-    let finalSize = ebat;
-    if (!finalSize && aciklama) {
-      const m = aciklama.match(/(\d{2,4}[/\\.X]\d{2,3}[Rr.]?\d{0,3})/);
-      if (m) finalSize = m[1];
-    }
-
-    // Model yoksa açıklamadan çıkar (ebat + yük'ten sonraki kısım)
-    let finalModel = model;
-    if (!finalModel && aciklama) {
-      const parts = aciklama.split(' ');
-      const si = (parts[0]?.match(/[/X.]/) || parts[0]?.match(/^\d/)) ? 2 : 1;
-      if (parts.length > si) finalModel = parts.slice(si).join(' ').trim();
-    }
+    // BALCI OTO STOK sütun yapısı:
+    // ÜRÜN | MARKA | STOK KODU | ÜRÜN AÇIKLAMASI | MEVSİM | TARİH | KATEGORİ | STOK
+    const tip      = getCol(row, ['ÜRÜN','TİP','TIP'], ['tip','tur']);
+    const marka    = getCol(row, ['MARKA','BRAND'], ['marka','brand','make']);
+    const rawKod   = getCol(row, ['STOK KODU','KOD','SKU','CODE'], ['stok kodu','kod','kodu','code','sku']);
+    const kod      = rawKod ? String(rawKod).replace(/^[\/#\\]+/, '').trim() : '';
+    const aciklama = getCol(row, ['ÜRÜN AÇIKLAMASI','ACIKLAMA','TANIM','DESCRIPTION'], ['urun aciklama','aciklama','tanim','description','name']);
+    const mevsimRaw= getCol(row, ['MEVSİM','MEVSIM','SEZON','SEASON'], ['mevsim','sezon','season']);
+    const dot      = getCol(row, ['TARİH','TARIH','DOT','YIL'], ['tarih','dot','yil','year','uretim']);
+    const stok     = getCol(row, ['STOK','ADET','QUANTITY'], ['adet','quantity','qty','miktar']);
+    const gorsel   = getCol(row, ['GORSEL','RESİM','IMAGE','IMG'], ['gorsel','resim','foto','image','img']);
 
     // Tip belirsizse LASTİK varsayılan
-    const finalTip = tip ? tip.toUpperCase() : 'LASTİK';
+    const finalTip = tip ? tip.toUpperCase().trim() : 'LASTİK';
 
-    let inc    = getColVal(row, ['inc', 'inch', 'cap_inch', 'jant_cap', 'jantcap', 'rim_size']);
-    let bjon   = getColVal(row, ['bjon', 'pcd', 'delik_araligi', 'bolt', 'civata', 'delik']);
-    let ofset  = getColVal(row, ['ofset', 'offset', 'et']);
-    let goebek = getColVal(row, ['goebek', 'gobek', 'hub', 'merkez', 'center_bore', 'cb']);
+    // Ebat açıklamadan çıkar
+    let finalSize = '';
+    if (aciklama) {
+      if (finalTip === 'LASTİK') {
+        // Örnek: "145/70R13 71T ELEGANT PT311 PETLAS"
+        const m = aciklama.match(/(\d{2,4}[\/\\.]\d{2,3}[Rr]\d{2,3})/);
+        if (m) finalSize = m[1];
+      } else {
+        // Örnek: "6X13 4X98 ET13 58.6 SILVER" → 6X13
+        const m = aciklama.match(/(\d+(?:\.\d+)?[Xx]\d+(?:\.\d+)?)/);
+        if (m) finalSize = m[1].toUpperCase();
+      }
+    }
 
-    // JANT ise açıklamadan otomatik parse et (Excel'de ayrı sütun yoksa)
-    // Örnek: "6X13 4X98 ET13 58.6 SILVER"
-    //   inc    = 13  (6x13'ten → son sayı)
-    //   bjon   = 4X98 (4 ya da 5 ile başlayan x aralığı)
-    //   ofset  = ET13 (ET ile başlayan)
-    //   goebek = 58.6 (ondalikli merkez çapı)
+    // Yük indeksi açıklamadan çıkar (lastik: "71T", "91H" vb.)
+    let yuk = '';
+    if (finalTip === 'LASTİK' && aciklama) {
+      const m = aciklama.match(/\b(\d{2,3}[A-Z]{1,2})\b/i);
+      if (m) yuk = m[1].toUpperCase();
+    }
+
+    // Model açıklamadan çıkar
+    let finalModel = '';
+    if (aciklama) {
+      const parts = aciklama.trim().split(/\s+/);
+      if (finalTip === 'LASTİK' && parts.length >= 3) {
+        // İlk 2 token: ebat + yük indeksi → gerisi model+marka
+        finalModel = parts.slice(2).join(' ').trim();
+      } else if (finalTip === 'JANT') {
+        // Jant açıklamasının son renk/model kısmı: "6X13 4X98 ET13 58.6 SILVER" → SILVER
+        const m = aciklama.match(/[A-Za-z][A-Za-z0-9 ]+$/);
+        if (m) finalModel = m[0].trim();
+      }
+    }
+
+    // Jant özel alanları açıklamadan parse et
+    let inc = '', bjon = '', ofset = '', goebek = '';
     if (finalTip === 'JANT' && aciklama) {
       const desc = aciklama.toUpperCase();
-      if (!inc) {
-        // Önce \dX\d\d formatından cap çıkar (6X13, 7X16 vb.)
-        const mInch = desc.match(/\d(?:\.\d)?[Xx](\d{2}(?:\.\d)?)(?:\s|$)/);
-        if (mInch) inc = mInch[1];
-        else {
-          // Doğrudan 2 haneli sayı arayışı (13, 14, 15, 16...)
-          const mInch2 = desc.match(/(?:^|\s)(1[3-9]|2[0-4])(?:"|"|\s|$)/);
-          if (mInch2) inc = mInch2[1];
-        }
-      }
-      if (!bjon) {
-        const mBjon = desc.match(/([45]X\d{2,5}(?:\.\d)?)/);
-        if (mBjon) bjon = mBjon[1];
-      }
-      if (!ofset) {
-        const mOfset = desc.match(/ET(-?\d{1,3})/);
-        if (mOfset) ofset = 'ET' + mOfset[1];
-      }
-      if (!goebek) {
-        const mGoebek = desc.match(/\b(\d{2,3}\.\d)\b/);
-        if (mGoebek) goebek = mGoebek[1];
-      }
+      // İnç: "6X13" → 13, "6.5X16" → 16
+      const mInch = desc.match(/\d+(?:\.\d+)?[Xx](\d{2}(?:\.\d+)?)(?:\s|$)/);
+      if (mInch) inc = mInch[1];
+      // Bijon: "4X98", "5X112", "6X130"
+      const mBjon = desc.match(/([456]X\d{2,5}(?:\.\d)?)/);
+      if (mBjon) bjon = mBjon[1];
+      // Ofset: "ET13", "ET35", "ET50"
+      const mOfset = desc.match(/ET(-?\d{1,3})/);
+      if (mOfset) ofset = 'ET' + mOfset[1];
+      // Göbek: "58.6", "84.1"
+      const mGoebek = desc.match(/\b(\d{2,3}\.\d)\b/);
+      if (mGoebek) goebek = mGoebek[1];
     }
 
     return {
