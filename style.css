@@ -205,9 +205,8 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  max-width: 480px;
-  margin: 0 auto;
-  box-shadow: 0 0 80px rgba(0,0,0,0.8);
+  width: 100%;
+  max-width: 100%;
   background: #111111; /* Mat siyah app background */
 }
 
@@ -1055,8 +1054,8 @@ html, body {
   z-index: 300;
   display: flex;
   flex-direction: column;
-  max-width: 480px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
   animation: pageSlideIn 0.35s cubic-bezier(0.34,1.2,0.64,1);
 }
 
@@ -1357,26 +1356,147 @@ html, body {
 }
 
 /* ============================
-   DESKTOP WRAPPER
+   RESPONSIVE LAYOUT (Mobil App & Masaüstü Web Sitesi)
    ============================ */
-@media (min-width: 481px) {
-  body {
-    background: #050810;
-    display: flex;
+
+/* Masaüstü ve Tablet Ekranları (>= 768px) */
+@media (min-width: 768px) {
+  .header-inner {
+    padding: 14px 40px;
+  }
+
+  .search-bar {
+    padding: 0 40px 14px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .product-section {
+    padding: 20px 40px 40px;
+  }
+
+  .section-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .card-image-wrap {
+    height: 180px;
+  }
+
+  .card-image-wrap img {
+    max-width: 180px;
+    height: 150px;
+  }
+
+  .card-body {
+    padding: 14px 16px 16px;
+  }
+
+  .card-size {
+    font-size: 1rem;
+  }
+
+  .card-model {
+    font-size: 0.78rem;
+  }
+
+  /* Segment Seçici Masaüstü Görünümü */
+  .segment-selector {
+    max-width: 840px;
+    margin: 60px auto;
+    max-height: 380px;
+    gap: 32px;
+    padding: 20px;
+  }
+
+  .segment-card {
+    padding: 44px 32px 36px;
+    border-radius: 20px;
+  }
+
+  .segment-icon {
+    width: 96px;
+    height: 96px;
+  }
+
+  .segment-label {
+    font-size: 1.6rem;
+  }
+
+  .segment-sub {
+    font-size: 0.88rem;
+  }
+
+  .segment-header {
+    padding: 14px 40px;
+  }
+
+  /* Modal Masaüstü Ortalanmış Diyalog */
+  .modal-overlay {
     align-items: center;
     justify-content: center;
+    padding: 24px;
   }
 
-  .app {
-    height: calc(100vh - 40px);
-    border-radius: 40px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: 0 30px 100px rgba(0,0,0,0.8);
+  .modal {
+    max-width: 640px;
+    border-radius: 24px;
+    padding: 32px 28px;
+    max-height: 90vh;
+    animation: modalScaleUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
   }
 
-  .splash {
-    border-radius: 0;
+  @keyframes modalScaleUp {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .modal-details {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  /* Hakkımızda Sayfası Masaüstü Yerleşimi */
+  .about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  .about-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .about-brands {
+    max-width: 800px;
+    margin: 16px auto 0;
+  }
+}
+
+/* Geniş Masaüstü Ekranları (>= 1200px) */
+@media (min-width: 1200px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 24px;
+  }
+
+  .product-section {
+    padding: 24px 60px 60px;
+  }
+
+  .header-inner {
+    padding: 16px 60px;
+  }
+
+  .segment-header {
+    padding: 16px 60px;
   }
 }
 
