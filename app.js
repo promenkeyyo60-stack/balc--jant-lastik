@@ -73,26 +73,14 @@ function getProductImage(p) {
 
 // ---- INITIALIZATION ----
 document.addEventListener("DOMContentLoaded", () => {
-  const splash = document.getElementById("splash");
   const savedSegment = localStorage.getItem("activeSegment");
 
   if (savedSegment && (savedSegment === "jant" || savedSegment === "lastik")) {
-    // Sayfa yenilendiğinde kalınan segmentten başla (uzun açılış animasyonunu atla)
-    splash.classList.add("hidden");
-    appView.classList.remove("hidden");
+    // Sayfa yenilendiğinde kalınan segmentten başla
     selectSegment(savedSegment, true);
-    tryFetchAllExcel();
-  } else {
-    // İlk giriş veya ana menüye dönüş: açılış ekranı gösterilsin
-    setTimeout(() => {
-      splash.classList.add("fade-out");
-      setTimeout(() => {
-        splash.classList.add("hidden");
-        appView.classList.remove("hidden");
-        tryFetchAllExcel();
-      }, 700);
-    }, 4500);
   }
+  // Segment seçilmemişse JANT & LASTİK seçim ekranı gösterilir
+  tryFetchAllExcel();
 });
 
 // ---- SIDEBAR & ACCORDIONS ----
