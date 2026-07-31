@@ -765,32 +765,32 @@ html, body {
 
 .card-season-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 28px;
-  height: 28px;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 1.15rem;
   z-index: 2;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .card-season-badge.summer {
-  background: rgba(251,191,36,0.2);
-  border: 1px solid rgba(251,191,36,0.4);
+  background: #fef9c3;
+  border: 1px solid #fde047;
 }
 
 .card-season-badge.winter {
-  background: rgba(96,165,250,0.2);
-  border: 1px solid rgba(96,165,250,0.4);
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
 }
 
 .card-season-badge.allseason {
-  background: rgba(16,185,129,0.2);
-  border: 1px solid rgba(16,185,129,0.4);
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
 }
 
 .product-card {
@@ -896,19 +896,19 @@ html, body {
 }
 
 .card-size {
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: 900;
   color: #0f172a;
   line-height: 1.25;
-  margin-top: 4px;
+  margin-top: 6px;
   margin-bottom: 2px;
 }
 
 .card-model {
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 700;
   color: #64748b;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   line-height: 1.3;
   text-transform: uppercase;
 }
@@ -923,18 +923,18 @@ html, body {
 }
 
 .meta-tag {
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 99px;
-  border: 1.5px solid;
+  border: 1px solid;
 }
 
 .meta-tag.dot {
   color: #64748b;
   border-color: #e2e8f0;
   background: #ffffff;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
 }
 
 .meta-tag.code {
