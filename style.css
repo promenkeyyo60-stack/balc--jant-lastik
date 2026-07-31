@@ -795,31 +795,17 @@ html, body {
 
 .card-image-wrap {
   position: relative;
-  background: #111111;
+  background: #ffffff !important;
   padding: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 150px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #f1f5f9;
   overflow: hidden;
 }
 
-.card-image-wrap.white-bg {
-  background: #ffffff;
-  padding: 10px;
-}
-
 .card-image-wrap::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0; right: 0;
-  height: 30px;
-  background: linear-gradient(to bottom, transparent, #111111);
-}
-
-.card-image-wrap.white-bg::after {
   display: none;
 }
 
@@ -829,8 +815,8 @@ html, body {
   width: 100%;
   height: 130px;
   object-fit: contain;
-  mix-blend-mode: screen;
-  filter: contrast(1.1) brightness(1.05);
+  mix-blend-mode: normal !important;
+  filter: none !important;
   transition: transform 0.3s ease;
 }
 
@@ -1025,25 +1011,20 @@ html, body {
 }
 
 .modal-image-wrap {
-  background: #111111;
+  background: #ffffff !important;
   border-radius: var(--radius);
   padding: 24px;
   text-align: center;
   margin-bottom: 20px;
-  border: 1px solid var(--border);
-}
-
-.modal-image-wrap.white-bg {
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e2e8f0;
 }
 
 .modal-image-wrap img {
   max-width: 220px;
   width: 100%;
   height: auto;
-  mix-blend-mode: screen;
-  filter: contrast(1.1) brightness(1.05);
+  mix-blend-mode: normal !important;
+  filter: none !important;
 }
 
 .modal-image-wrap.white-bg img {
@@ -1576,11 +1557,11 @@ html, body {
   box-shadow: 0 8px 24px rgba(212, 175, 55, 0.15);
 }
 
-/* Ürün resimlerinin bulunduğu kutu SİYAH arka plan */
+/* Ürün resimlerinin bulunduğu kutu BEYAZ arka plan */
 .product-card .card-image-wrap,
 .app.segment-active .card-image-wrap {
-  background: #111111 !important;
-  border-bottom: 1px solid #1e293b;
+  background: #ffffff !important;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .app.segment-active .card-size {
