@@ -139,8 +139,9 @@ function selectSegment(type, isRestore = false) {
   activeSegment = type;
   localStorage.setItem("activeSegment", type);
   
-  // Hide selector, show main header and product view
+  // Hide selector, show main header and product view with white theme
   segmentSelector.classList.add("hidden");
+  appView.classList.add("segment-active");
   if (mainHeader) mainHeader.classList.remove("hidden");
   segmentHeader.classList.remove("hidden");
   productSection.style.display = "";
@@ -198,34 +199,35 @@ function goBackToSelector() {
   activeSegment = null;
   localStorage.removeItem("activeSegment");
   segmentSelector.classList.remove("hidden");
+  appView.classList.remove("segment-active");
   if (mainHeader) mainHeader.classList.add("hidden");
   segmentHeader.classList.add("hidden");
   productSection.style.display = "none";
   sectionLabel.textContent = "Tüm Ürünler";
 }
 
+function toggleLandingSearch() {
+  const isHidden = searchBar.classList.toggle("hidden");
+  if (!isHidden) {
+    searchInput.focus();
+  }
+}
+
 // Make globally accessible
 window.selectSegment = selectSegment;
 window.goBackToSelector = goBackToSelector;
+window.toggleLandingSearch = toggleLandingSearch;
 
 // ---- EXCEL READING (SheetJS) ----
-// Tek kaynak: veri.xlsx | Cache-busting + canlı stok takibi (30sn)
+// Tek kaynak: veri.xlsx | Cache-busting + sessiz arka plan canlı stok takibi (30sn)
 
 async function fetchVeriExcel() {
-  const isFirstLoad = LASTIK_PRODUCTS.length === 0 && JANT_PRODUCTS.length === 0;
-
-  // İlk yüklemede loading overlay göster
-  if (isFirstLoad) {
-    loadingOverlay.classList.remove("hidden");
-  }
-
   try {
     const url = `veri.xlsx?t=${new Date().getTime()}`;
     const response = await fetch(url);
 
     if (!response.ok) {
       console.warn(`[Stok] veri.xlsx alınamadı (HTTP ${response.status}). Eski veri korunuyor.`);
-      if (isFirstLoad) loadingOverlay.classList.add("hidden");
       return;
     }
 
@@ -234,7 +236,6 @@ async function fetchVeriExcel() {
     // Boş dosya kontrolü
     if (!arrayBuffer || arrayBuffer.byteLength === 0) {
       console.warn("[Stok] veri.xlsx boş. Eski veri korunuyor.");
-      if (isFirstLoad) loadingOverlay.classList.add("hidden");
       return;
     }
 
@@ -243,7 +244,6 @@ async function fetchVeriExcel() {
       workbook = XLSX.read(arrayBuffer, { type: "array" });
     } catch (parseErr) {
       console.error("[Stok] Excel parse hatası:", parseErr);
-      if (isFirstLoad) loadingOverlay.classList.add("hidden");
       return;
     }
 
@@ -252,7 +252,6 @@ async function fetchVeriExcel() {
     // Veri geçerliyse güncelle, değilse eski veriyi koru
     if (!parsed || parsed.length === 0) {
       console.warn("[Stok] veri.xlsx okunabildi fakat içerik boş/geçersiz. Eski veri korunuyor.");
-      if (isFirstLoad) loadingOverlay.classList.add("hidden");
       return;
     }
 
@@ -270,11 +269,8 @@ async function fetchVeriExcel() {
   } catch (err) {
     console.error("[Stok] Beklenmedik hata:", err);
   } finally {
-    if (isFirstLoad) {
-      loadingOverlay.classList.add("hidden");
-      if (!activeSegment) {
-        productSection.style.display = "none";
-      }
+    if (!activeSegment) {
+      productSection.style.display = "none";
     }
   }
 }

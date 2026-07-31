@@ -1332,17 +1332,48 @@ html, body {
   opacity: 0.7;
 }
 
-/* İçerik */
+/* Şeffaf Sol Üst Menü & Arama Butonları (Fotoğraf Üstünde Yüzüyor) */
+.segment-overlay-nav {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.overlay-btn {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.overlay-btn:hover {
+  background: rgba(212, 175, 55, 0.4) !important;
+  border-color: var(--accent) !important;
+}
+
+/* Mobil & Masaüstü İçerik ve TIKLA Butonu Eşit Hizalama */
 .segment-half-content {
-  position: relative;
+  position: absolute;
+  bottom: 12%;
+  left: 0;
+  right: 0;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   text-align: center;
-  padding: 20px 16px;
-  gap: 6px;
+  padding: 0 12px;
+  gap: 4px;
 }
 
 /* Üst slogan */
@@ -1400,6 +1431,7 @@ html, body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
+  pointer-events: auto;
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
 }
@@ -1419,89 +1451,142 @@ html, body {
   color: #000;
 }
 
-/* Ortadaki BALCI OTOMOTİV branding */
-.segment-center-brand {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, transparent 75%);
-  padding: 28px 36px;
-  border-radius: 16px;
-}
-
-.segment-brand-logo {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent);
-  margin-bottom: 2px;
-}
-
-.segment-brand-logo svg {
-  width: 32px;
-  height: 32px;
-  filter: drop-shadow(0 2px 6px rgba(212, 175, 55, 0.4));
-}
-
-.segment-brand-text {
-  font-family: var(--font);
-  font-size: 1.6rem;
-  font-weight: 900;
-  font-style: italic;
-  background: linear-gradient(135deg, #FFF5B8 0%, #F5D061 35%, #D4AF37 75%, #AA820A 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.segment-brand-sub {
-  font-family: var(--font);
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: #FFFFFF;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-}
-
-/* Ortadaki X şeklinde çapraz çizgi efekti */
-.segment-selector::before,
-.segment-selector::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(to bottom, transparent 0%, rgba(212, 175, 55, 0.15) 30%, rgba(212, 175, 55, 0.3) 50%, rgba(212, 175, 55, 0.15) 70%, transparent 100%);
-  z-index: 5;
-  pointer-events: none;
-}
-
-.segment-selector::after {
-  display: none;
-}
-
-/* -- Segment Header Bar -- */
+/* -- Segment Header Bar (Katalog Görünümünde Üst Bar) -- */
 .segment-header {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.segment-header-row1 {
+  display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
+  justify-content: space-between;
+  width: 100%;
+}
+
+.segment-header-row2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sub-btn {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #1e293b !important;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+
+.sub-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+.segment-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+
+.segment-back-btn:hover {
+  background: #e2e8f0;
+  color: #000000;
+}
+
+.segment-header-tabs {
+  display: flex;
+  gap: 4px;
+  background: #f1f5f9;
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  border: 1px solid #cbd5e1;
+}
+
+.segment-tab {
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.segment-tab.active {
+  background: var(--accent);
+  color: #000;
+}
+
+.segment-tab:hover:not(.active) {
+  color: #0f172a;
+}
+
+/* ============================
+   KATALOG BEYAZ ARKA PLAN TEMA
+   ============================ */
+.app.segment-active {
+  background-color: #ffffff !important;
+}
+
+.app.segment-active .product-section {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+.app.segment-active .section-header h3 {
+  color: #0f172a;
+}
+
+.app.segment-active .product-count {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.app.segment-active .product-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.app.segment-active .product-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.15);
+}
+
+.app.segment-active .card-size {
+  color: #0f172a;
+}
+
+.app.segment-active .card-model {
+  color: #64748b;
+}
+
+.app.segment-active .card-image-wrap {
+  background: #f8fafc;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .segment-back-btn {

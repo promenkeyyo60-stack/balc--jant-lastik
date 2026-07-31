@@ -74,41 +74,22 @@
   <!-- MAIN APP -->
   <div id="app" class="app">
 
-    <!-- HEADER -->
-    <header class="header hidden" id="mainHeader">
-      <div class="header-inner">
-        <!-- Hamburger Menu Button -->
-        <button class="icon-btn" id="sidebarOpenBtn" aria-label="Menü">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <!-- SEGMENT SELECTOR - Tam Ekran JANT & LASTİK Seçim -->
+    <div class="segment-selector" id="segmentSelector">
+      <!-- Şeffaf Sol Üst Menü & Arama Butonları (Fotoğraf Üstünde Yüzüyor) -->
+      <div class="segment-overlay-nav">
+        <button class="icon-btn overlay-btn" id="sidebarOpenBtnLanding" aria-label="Menü" onclick="toggleSidebar()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
-
-        <div class="header-logo" style="margin: 0 auto; text-align: center; display: flex; justify-content: center;">
-            <img src="logo.jpg" alt="Balcı Logo" style="height: 52px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
-        </div>
-
-        <div class="header-actions">
-          <button class="icon-btn" id="searchBtn" aria-label="Arama">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      <!-- Search Bar -->
-      <div class="search-bar hidden" id="searchBar">
-        <input type="text" id="searchInput" placeholder="Ürün ara... (örn: 195/55R16)" />
-        <button id="clearSearch">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        <button class="icon-btn overlay-btn" id="searchBtnLanding" aria-label="Arama" onclick="toggleLandingSearch()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
           </svg>
         </button>
       </div>
-    </header>
 
-    <!-- SEGMENT SELECTOR - Tam Ekran JANT & LASTİK Seçim -->
-    <div class="segment-selector" id="segmentSelector">
       <!-- Sol: JANT -->
       <div class="segment-half segment-jant" id="segmentJant">
         <div class="segment-half-bg" style="background-image: url('segment_jant.jpg');"></div>
@@ -140,17 +121,43 @@
       </div>
     </div>
 
-    <!-- SEGMENT HEADER BAR (shown when a segment is active) -->
+    <!-- SEGMENT HEADER BAR (Katalog Görünümünde Üst Bar) -->
     <div class="segment-header hidden" id="segmentHeader">
-      <button class="segment-back-btn" id="segmentBackBtn" onclick="goBackToSelector()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
-        Geri
-      </button>
-      <div class="segment-header-tabs">
-        <button class="segment-tab" id="tabLastik" onclick="selectSegment('lastik')">LASTİK</button>
-        <button class="segment-tab" id="tabJant" onclick="selectSegment('jant')">JANT</button>
+      <div class="segment-header-row1">
+        <button class="segment-back-btn" id="segmentBackBtn" onclick="goBackToSelector()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Geri
+        </button>
+        <div class="segment-header-tabs">
+          <button class="segment-tab" id="tabLastik" onclick="selectSegment('lastik')">LASTİK</button>
+          <button class="segment-tab" id="tabJant" onclick="selectSegment('jant')">JANT</button>
+        </div>
+      </div>
+
+      <!-- Geri Tuşunun Alt Kısmında Menü & Arama -->
+      <div class="segment-header-row2">
+        <button class="icon-btn sub-btn" id="sidebarOpenBtn" aria-label="Menü">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+        <button class="icon-btn sub-btn" id="searchBtn" aria-label="Arama">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-bar hidden" id="searchBar">
+        <input type="text" id="searchInput" placeholder="Ürün ara... (örn: 195/55R16)" />
+        <button id="clearSearch">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
       </div>
     </div>
 
