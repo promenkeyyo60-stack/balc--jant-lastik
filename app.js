@@ -57,9 +57,9 @@ const tabLastik = document.getElementById("tabLastik");
 const tabJant = document.getElementById("tabJant");
 
 // ---- PRODUCT IMAGES ----
-const TIRE_IMAGE_SRC = "tire.png";
-const JANT_IMAGE_SRC = "jant_17.png"; // Varsayılan jant görseli
-const PT311_IMAGE_SRC = "pt311.jpg"; // Elegant PT311 model görseli
+const TIRE_IMAGE_SRC = "snowmaster2.jpg"; // Varsayılan temiz beyaz arka planlı lastik görseli
+const JANT_IMAGE_SRC = "jant_17.png";     // Varsayılan temiz beyaz arka planlı jant görseli
+const PT311_IMAGE_SRC = "pt311.jpg";      // Elegant PT311 model görseli
 const SNOWMASTER2_IMAGE_SRC = "snowmaster2.jpg"; // Snowmaster2 model görseli
 
 // Model bazlı özel görsel eşleştirme
