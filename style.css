@@ -1277,14 +1277,14 @@ html, body {
    SEGMENT SELECTOR - Tam Ekran Split Tasarım
    ============================ */
 .segment-selector {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
   display: flex;
   flex-direction: row;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
-  flex: 1;
-  position: relative;
   overflow: hidden;
-  min-height: 0;
   background: #050505;
 }
 

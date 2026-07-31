@@ -85,8 +85,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedSegment && (savedSegment === "jant" || savedSegment === "lastik")) {
     // Sayfa yenilendiğinde kalınan segmentten başla
     selectSegment(savedSegment, true);
+  } else {
+    // İlk açılışta seçim ekranı gösterilir, ürün listesi gizlenir
+    goBackToSelector();
   }
-  // Segment seçilmemişse JANT & LASTİK seçim ekranı gösterilir
   tryFetchAllExcel();
 });
 
@@ -205,7 +207,6 @@ function goBackToSelector() {
   if (segmentDynamicSidebar) segmentDynamicSidebar.classList.add("hidden");
   productSection.style.display = "none";
   sectionLabel.textContent = "Tüm Ürünler";
-}l.textContent = "Tüm Ürünler";
 }
 
 function toggleLandingSearch() {
