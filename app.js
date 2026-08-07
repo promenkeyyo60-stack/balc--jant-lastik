@@ -57,12 +57,52 @@ const tabLastik = document.getElementById("tabLastik");
 const tabJant = document.getElementById("tabJant");
 
 // ---- PRODUCT IMAGES ----
-const TIRE_IMAGE_SRC = "snowmaster2.jpg"; // Varsayılan temiz beyaz arka planlı lastik görseli
-const JANT_IMAGE_SRC = "jant_17.png";     // Varsayılan temiz beyaz arka planlı jant görseli
-const PT311_IMAGE_SRC = "pt311.jpg";      // Elegant PT311 model görseli
-const SNOWMASTER2_IMAGE_SRC = "snowmaster2.jpg"; // Snowmaster2 model görseli
+// Gerçek ürün fotoğrafları - beyaz arka planlı
+const TIRE_IMAGE_SRC = "petlas_yaz.png";        // PETLAS lastik görseli (beyaz arka plan)
+const TIRE_WINTER_SRC = "snowmaster2.jpg";       // Kış lastiği
+const JANT_IMAGE_SRC = "jant_rc_silver.png";    // RC Silver varsayılan jant
+const PT311_IMAGE_SRC = "pt311.jpg";             // Elegant PT311
+const SNOWMASTER2_IMAGE_SRC = "snowmaster2.jpg"; // Snowmaster2
 
-// Model bazlı özel görsel eşleştirme
+// Marka + renk bazlı jant görsel eşleştirme
+function getJantImage(product) {
+  const brand = (product.brand || '').toUpperCase().trim();
+  const desc  = (product.description || '').toUpperCase();
+
+  // DJ Markaları
+  if (brand === 'DJ') {
+    return 'jant_dj.png';
+  }
+  // CMS Markaları
+  if (brand === 'CMS') {
+    if (desc.includes('DARK BLACK') || desc.includes('BLACK DARK')) return 'jant_rc_black.png';
+    return 'jant_cms.png';
+  }
+  // CARRE Markaları
+  if (brand === 'CARRE') {
+    if (desc.includes('BLACK DAIMOND') || desc.includes('BLACK DIAMOND')) return 'jant_rc_black.png';
+    return 'jant_carre_silver.png';
+  }
+  // RC Markaları - renk bazlı
+  if (brand === 'RC') {
+    if (desc.includes('BLACK DAIMOND') || desc.includes('BLACK DIAMOND') ||
+        desc.includes('MAT BLACK') || desc.includes('DARK BLACK')) {
+      return 'jant_rc_black.png';
+    }
+    if (desc.includes('GUN METAL') || desc.includes('MAT GM') || desc.includes('GUN METAL')) {
+      return 'jant_cms.png'; // Gun metal ton
+    }
+    return 'jant_rc_silver.png';
+  }
+  // Bilinmeyen marka - inch bazlı varsayılan
+  const inc = parseInt(product.inc || '17');
+  if (inc >= 17) return 'jant_17.png';
+  if (inc === 16) return 'jant_16.png';
+  if (inc === 15) return 'jant_15.png';
+  return 'jant_rc_silver.png';
+}
+
+// Model bazlı özel görsel eşleştirme (lastikler için)
 function getModelImage(product) {
   const desc = ((product.description || '') + ' ' + (product.model || '')).toUpperCase();
   if (desc.includes('SNOWMASTER2') || desc.includes('SNOWMASTER 2')) return SNOWMASTER2_IMAGE_SRC;
@@ -70,12 +110,17 @@ function getModelImage(product) {
   return null;
 }
 
-// Ürün görseli öncelik sırası: model bazlı > Excel'deki özel görsel > segment varsayılan
+// Ürün görseli öncelik sırası: model bazlı > jant marka bazlı > Excel > segment varsayılan
 function getProductImage(p) {
+  // Jant ise marka/renk bazlı görsel
+  if (activeSegment === 'jant') {
+    return getJantImage(p);
+  }
+  // Lastik için model bazlı
   const modelImg = getModelImage(p);
   if (modelImg) return modelImg;
-  if (p.image && p.image !== TIRE_IMAGE_SRC && p.image !== JANT_IMAGE_SRC) return p.image;
-  return activeSegment === "jant" ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC;
+  if (p.image && p.image !== TIRE_IMAGE_SRC) return p.image;
+  return TIRE_IMAGE_SRC;
 }
 
 // ---- INITIALIZATION ----
@@ -544,6 +589,40 @@ function getBrandLogoHTML(brand) {
       </svg>
     </div>`;
   }
+  // ---- JANT MARKALARI ----
+  if (b === 'RC') {
+    return `<div class="brand-logo-wrap" title="RC">
+      <svg viewBox="0 0 80 32" class="brand-svg">
+        <rect width="80" height="32" rx="4" fill="#1a1a2e"/>
+        <text x="40" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="18" fill="#D4AF37" text-anchor="middle" letter-spacing="2">RC</text>
+      </svg>
+    </div>`;
+  }
+  if (b === 'CARRE') {
+    return `<div class="brand-logo-wrap" title="CARRE">
+      <svg viewBox="0 0 110 32" class="brand-svg">
+        <rect width="110" height="32" rx="4" fill="#2d2d2d"/>
+        <rect x="3" y="3" width="26" height="26" rx="3" fill="none" stroke="#c0c0c0" stroke-width="2"/>
+        <text x="58" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="13" fill="#e8e8e8" text-anchor="middle" letter-spacing="1">CARRE</text>
+      </svg>
+    </div>`;
+  }
+  if (b === 'CMS') {
+    return `<div class="brand-logo-wrap" title="CMS">
+      <svg viewBox="0 0 90 32" class="brand-svg">
+        <rect width="90" height="32" rx="4" fill="#0f3460"/>
+        <text x="45" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="16" fill="#e94560" text-anchor="middle" letter-spacing="1.5">CMS</text>
+      </svg>
+    </div>`;
+  }
+  if (b === 'DJ') {
+    return `<div class="brand-logo-wrap" title="DJ">
+      <svg viewBox="0 0 70 32" class="brand-svg">
+        <rect width="70" height="32" rx="4" fill="#1a1a1a" stroke="#D4AF37" stroke-width="1"/>
+        <text x="35" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="17" fill="#D4AF37" text-anchor="middle" letter-spacing="2">DJ</text>
+      </svg>
+    </div>`;
+  }
 
   return `<div class="brand-logo-wrap default-badge" title="${brand}">
     <span class="brand-text-badge">${brand}</span>
@@ -631,7 +710,7 @@ function renderProducts() {
     
     card.innerHTML = `
       ${seasonBadge}
-      <div class="card-image-wrap${getModelImage(p) ? ' white-bg' : ''}">
+      <div class="card-image-wrap white-bg">
         <img src="${imgSrc}" alt="${p.description}" loading="lazy" onerror="this.src='${activeSegment === 'jant' ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC}'" />
       </div>
       <div class="card-body">
@@ -763,7 +842,7 @@ function openModal(p) {
   `;
 
   modalContent.innerHTML = `
-    <div class="modal-image-wrap${getModelImage(p) ? ' white-bg' : ''}">
+    <div class="modal-image-wrap white-bg">
       <img src="${modalImg}" alt="${p.description}" onerror="this.src='${activeSegment === 'jant' ? JANT_IMAGE_SRC : TIRE_IMAGE_SRC}'" />
     </div>
 
